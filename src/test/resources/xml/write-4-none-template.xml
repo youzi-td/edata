@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<excel>
+    <sheet sheetName="资产信息表-横表" sheetCode="assetInfo">
+        <horizontalBody  firstValuePosition="a1">
+            <cell title="序号" field="sequence" autoSequence="true"/>
+            <cell title="资产名称" field="assetName" maxLength="20"/>
+            <cell title="资产编码" field="assetCode" maxLength="20">
+                <!--                <rule type="custom" expression="AssetCodeValidator" values="${balanceSheet.f1}"/>-->
+                <rule type="unique"/>
+            </cell>
+            <cell title="价值类型" field="valueType">
+                <rule type="selection" values="有价值,无价值"/>
+            </cell>
+            <cell title="价值" field="assetValue" />
+            <cell title="数量" field="amount" valType="number" format="10,0"/>
+            <cell title="单价" field="price" valType="number" format="10,2"/>
+            <cell title="取得日期" field="obtainDate"/>
+            <cell title="使用方向" field="useIntention" required="false">
+                <rule type="selections" values="自用,出租,出借,闲置"/>
+            </cell>
+
+            <cell title="localDate" field="localDate"/>
+            <cell title="localDateTime" field="localDateTime"/>
+            <cell title="zonedDateTime" field="zonedDateTime"/>
+            <cell title="collection" field="collection"/>
+
+
+        </horizontalBody>
+        <!--<templateFilter values="填报日期：" positions="D4"/>-->
+    </sheet>
+    <globalFilter values="(请填写）"/>
+</excel>

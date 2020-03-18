@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<excel>
+    <sheet sheetName="资产信息表-横表" sheetCode="assetInfo">
+        <header>
+            <cell title="单位名称" field="unitName" position="c3"/>
+            <cell title="单位编码" field="unitCode" position="c4"/>
+            <cell title="填报日期" field="fillDate" valType="date" position="e3"/>
+            <cell title="填报人" field="filler" position="e4"/>
+        </header>
+        <horizontalBody  firstValuePosition="b8">
+            <cell title="资产名称" field="assetName" maxLength="20"/>
+            <cell title="资产编码" field="assetCode" maxLength="20">
+                <!--                <rule type="custom" expression="AssetCodeValidator" values="${balanceSheet.f1}"/>-->
+                <rule type="unique"/>
+            </cell>
+            <cell title="价值类型" field="valueType">
+                <rule type="selection" values="有价值,无价值"/>
+            </cell>
+            <cell title="价值" field="assetValue" valType="number" format="10,2" required="false">
+                <rule type="boolean" expression="${assetValue} > 0" />
+                <condition target="${valueType}" values="有价值">
+                    <rule type="required"/>
+                </condition>
+            </cell>
+            <cell title="数量" field="amount" valType="number" format="10,0"/>
+            <cell title="单价" field="price" valType="number" format="10,2">
+                <rule type="custom" expression="com.ruochu.edata.custom.PriceValidator" values="${assetValue},${amount}"/>
+            </cell>
+            <cell title="取得日期" field="obtainDate" valType="date" format="yyyy-MM-dd,yyyy年MM月dd日" required="false"/>
+            <cell title="使用方向" field="useIntention" required="false">
+                <rule type="selections" values="自用,出租,出借,闲置"/>
+            </cell>
+
+        </horizontalBody>
+        <!--<templateFilter values="填报日期：" positions="D4"/>-->
+    </sheet>
+
+    <sheet sheetCode="balanceSheet" sheetName="资产负债表-竖表">
+        <header>
+            <cell title="编制单位" field="unitName" position="a3" followTitle="true"/>
+            <cell title="填报日期" field="fillDate" position="e3"/>
+            <cell title="填报人" field="filler" position="g3"/>
+        </header>
+        <verticalBody>
+            <rectangle firstCell="C7" lastCell="D12">
+                <cell title="货币资金-年初数" field="f1" valType="number" format="10,2"/>
+                <cell title="货币资金-期末数" field="f2" valType="number" format="10,2"/>
+
+                <cell title="短期投资-年初数" field="f3" valType="number" format="10,2"/>
+                <cell title="短期投资-期末数" field="f4" valType="number" format="10,2"/>
+
+                <cell title="应收票据-年初数" field="f5" valType="number" format="10,2"/>
+                <cell title="应收票据-期末数" field="f6" valType="number" format="10,2"/>
+
+                <cell title="应收股利-年初数" field="f7" valType="number" format="10,2"/>
+                <cell title="应收股利-期末数" field="f8" valType="number" format="10,2"/>
+
+                <cell title="应收利息-年初数" field="f9" valType="number" format="10,2"/>
+                <cell title="应收利息-期末数" field="f10" valType="number" format="10,2"/>
+
+                <cell title="应收账款-年初数" field="f11" valType="number" format="10,2"/>
+                <cell title="应收账款-期末数" field="f12" valType="number" format="10,2"/>
+
+            </rectangle>
+            <rectangle firstCell="g7" lastCell="H12">
+                <cell title="短期借款-年初数" field="f13" valType="number" format="10,2"/>
+                <cell title="短期借款-期末数" field="f14" valType="number" format="10,2"/>
+
+                <cell title="应付票据-年初数" field="f15" valType="number" format="10,2"/>
+                <cell title="应付票据-期末数" field="f16" valType="number" format="10,2"/>
+
+                <cell title="应付账款-年初数" field="f17" valType="number" format="10,2"/>
+                <cell title="应付账款-期末数" field="f18" valType="number" format="10,2"/>
+
+                <cell title="预收账款-年初数" field="f19" valType="number" format="10,2"/>
+                <cell title="预收账款-期末数" field="f20" valType="number" format="10,2"/>
+
+                <cell title="应付工资-年初数" field="f21" valType="number" format="10,2"/>
+                <cell title="应付工资-期末数" field="f22" valType="number" format="10,2"/>
+
+                <cell title="应付福利费-年初数" field="f23" valType="number" format="10,2"/>
+                <cell title="应付福利费-期末数" field="f24" valType="number" format="10,2"/>
+            </rectangle>
+        </verticalBody>
+    </sheet>
+    <globalFilter values="(请填写）"/>
+</excel>
