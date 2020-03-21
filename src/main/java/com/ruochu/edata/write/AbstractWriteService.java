@@ -9,7 +9,6 @@ import com.ruochu.edata.util.XmlUtil;
 import com.ruochu.edata.xml.CellConf;
 import com.ruochu.edata.xml.ExcelConf;
 import com.ruochu.edata.xml.SheetConf;
-import com.ruochu.edata.util.EmptyChecker;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -17,6 +16,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+
+import static com.ruochu.edata.util.EmptyChecker.isEmpty;
+import static com.ruochu.edata.util.EmptyChecker.notEmpty;
 
 /**
  * @author : RanPengCheng
@@ -42,10 +44,10 @@ public abstract class AbstractWriteService implements WriteService {
 
     @Override
     public WriteService addBodyData(String sheetCode, List<?> datas) {
-        if (EmptyChecker.isEmpty(excelConf.getSheetBySheetCode(sheetCode))) {
+        if (isEmpty(excelConf.getSheetBySheetCode(sheetCode))) {
             throw new ERuntimeException("xml配置中未找到sheetCode：%s", sheetCode);
         }
-        if (EmptyChecker.notEmpty(datas)) {
+        if (notEmpty(datas)) {
             List<Map<String, String>> list = BeanToMapUtil.transformToStringMap(datas, getCells(sheetCode, Type.BODY));
             List<Map<String, String>> bodyData = bodyDataMap.get(sheetCode);
             if (bodyData == null) {
@@ -60,10 +62,10 @@ public abstract class AbstractWriteService implements WriteService {
 
     @Override
     public WriteService addBodyData(String sheetCode, Object data) {
-        if (EmptyChecker.isEmpty(excelConf.getSheetBySheetCode(sheetCode))) {
+        if (isEmpty(excelConf.getSheetBySheetCode(sheetCode))) {
             throw new ERuntimeException("xml配置中未找到sheetCode：%s", sheetCode);
         }
-        if (EmptyChecker.notEmpty(data)) {
+        if (notEmpty(data)) {
             Map<String, String> row = BeanToMapUtil.transformToStringMap(data, getCells(sheetCode, Type.BODY));
             List<Map<String, String>> bodyData = bodyDataMap.get(sheetCode);
             if (bodyData == null) {
@@ -77,11 +79,11 @@ public abstract class AbstractWriteService implements WriteService {
 
     @Override
     public WriteService addHeaderData(String sheetCode, Object headerData) {
-        if (EmptyChecker.isEmpty(excelConf.getSheetBySheetCode(sheetCode))) {
+        if (isEmpty(excelConf.getSheetBySheetCode(sheetCode))) {
             throw new ERuntimeException("xml配置中未找到sheetCode：%s", sheetCode);
         }
         List<CellConf> cells = getCells(sheetCode, Type.HEADER);
-        if (EmptyChecker.notEmpty(headerData) && EmptyChecker.notEmpty(cells)) {
+        if (notEmpty(headerData) && notEmpty(cells)) {
             headerDataMap.put(sheetCode, BeanToMapUtil.transformToStringMap(headerData, cells));
         }
         return this;
@@ -89,7 +91,7 @@ public abstract class AbstractWriteService implements WriteService {
 
     @Override
     public WriteService excelType(ExcelType excelType) {
-        if (EmptyChecker.notEmpty(excelType)) {
+        if (notEmpty(excelType)) {
             this.excelType = excelType;
         }
         return this;
@@ -113,7 +115,7 @@ public abstract class AbstractWriteService implements WriteService {
             return sheet.getVerticalBody().getCells();
         }
 
-        if (EmptyChecker.notEmpty(sheet.getHeader())) {
+        if (notEmpty(sheet.getHeader())) {
             return sheet.getHeader().getCells();
         }
         return null;

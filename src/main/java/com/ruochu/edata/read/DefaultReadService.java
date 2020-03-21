@@ -13,7 +13,6 @@ import com.ruochu.edata.read.validator.RuleValidatorFactory;
 import com.ruochu.edata.read.validator.TemplateValidator;
 import com.ruochu.edata.util.Context;
 import com.ruochu.edata.util.EmptyChecker;
-import cn.yzw.edata.xml.*;
 import com.ruochu.edata.xml.*;
 
 import java.util.*;
@@ -111,7 +110,7 @@ public class DefaultReadService extends AbstractReadService {
                 serialBlankRow++;
                 continue;
             }
-            DataMap dataMap = new DataMap(cSheetCode, cells.size(), currentRow);
+            DataMap dataMap = new DataMap(cSheetCode, currentRow, cells);
             for (CellConf cell : cells){
                 cell.setRowIndex(currentRow);
                 String value = cellValidate(cell);
@@ -139,7 +138,7 @@ public class DefaultReadService extends AbstractReadService {
     }
 
     private DataMap cellsValidate(List<CellConf> cells) {
-        DataMap dataMap = new DataMap(cSheetCode, cells.size());
+        DataMap dataMap = new DataMap(cSheetCode, cells);
         for (CellConf cell : cells) {
             String value = this.cellValidate(cell);
             dataMap.put(cell.getField(), value);

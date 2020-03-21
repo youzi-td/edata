@@ -10,7 +10,6 @@ import com.ruochu.edata.util.XmlUtil;
 import com.ruochu.edata.write.WriteService;
 import com.ruochu.edata.xml.CellConf;
 import com.ruochu.edata.xml.ExcelConf;
-import com.alibaba.fastjson.JSON;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -79,7 +78,7 @@ public class WriteTest {
 
     @Test
     public void testWrite4NoneTemplate() throws IOException {
-        int dataSize = 60000;
+        int dataSize = 1;
 
         List<AssetModel> list = new ArrayList<>(dataSize);
         for (int i = 0; i < dataSize; i++) {
@@ -104,7 +103,7 @@ public class WriteTest {
 
     @Test
     public void testWrite() throws IOException {
-        int dataSize = 6000;
+        int dataSize = 1;
 
         List<AssetModel> list = new ArrayList<>(dataSize);
         for (int i = 0; i < dataSize; i++) {
@@ -154,8 +153,8 @@ public class WriteTest {
         List<UseIntentionEnum> list = new ArrayList<>();
         list.add(UseIntentionEnum.IDLE);
         list.add(UseIntentionEnum.BORROW);
-//        assetModel.setUseIntention(list);
-//        assetModel.setValueType(ValueTypeEnum.HAS_VALUE);
+        assetModel.setUseIntention(list);
+        assetModel.setValueType(ValueTypeEnum.HAS_VALUE);
         assetModel.setLocalDate(LocalDate.now());
         assetModel.setLocalDateTime(LocalDateTime.now());
         assetModel.setZonedDateTime(ZonedDateTime.now());
@@ -197,7 +196,7 @@ public class WriteTest {
 
         Map<String, String> map = BeanToMapUtil.transformToStringMap(assetModel, cells);
 
-        AssetModel transfer = MapToBeanUtil.transfer(map, AssetModel.class);
+        AssetModel transfer = MapToBeanUtil.transfer(map, AssetModel.class, cells);
 
         System.out.println(transfer);
 
@@ -205,40 +204,21 @@ public class WriteTest {
 
     @Test
     public void test3() throws ReflectiveOperationException {
-        List<AssetModel> list = modelList(10000);
+        List<AssetModel> list = modelList(1);
         ExcelConf excelConf = XmlUtil.parseXmlConfig("xml/write-4-none-template.xml", false);
         List<CellConf> cells = excelConf.getSheets().get(0).getHorizontalBody().getCells();
 
-        List<Map<String, String>> list1 = BeanToMapUtil.transformToStringMap(list, cells);
-
         long l = System.currentTimeMillis();
+        List<Map<String, String>> list1 = BeanToMapUtil.transformToStringMap(list, cells);
+        System.out.println(System.currentTimeMillis() - l);
+        l = System.currentTimeMillis();
         List<AssetModel> list2 = new ArrayList<>(list.size());
         for (Map<String, String> map : list1) {
-            list2.add(MapToBeanUtil.transfer(map, AssetModel.class));
+            list2.add(MapToBeanUtil.transfer(map, AssetModel.class, cells));
         }
 
         System.out.println(System.currentTimeMillis() - l);
     }
-
-    @Test
-    public void test4() {
-        List<AssetModel> list = modelList(10000);
-        ExcelConf excelConf = XmlUtil.parseXmlConfig("xml/write-4-none-template.xml", false);
-        List<CellConf> cells = excelConf.getSheets().get(0).getHorizontalBody().getCells();
-
-        List<Map<String, String>> list1 = BeanToMapUtil.transformToStringMap(list, cells);
-
-        List<AssetModel> list2 = new ArrayList<>(list.size());
-        long l = System.currentTimeMillis();
-        for (Map<String, String> map : list1) {
-//            JSON.toJSONStringWithDateFormat(map, "yyyy-MM-dd");
-            AssetModel assetModel = JSON.parseObject(JSON.toJSONStringWithDateFormat(map, "yyyy-MM-dd"), AssetModel.class);
-            list2.add(assetModel);
-        }
-        System.out.println(System.currentTimeMillis() - l);
-        System.out.println(list2);
-    }
-
 
 }
 

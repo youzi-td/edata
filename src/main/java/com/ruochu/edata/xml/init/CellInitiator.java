@@ -104,6 +104,9 @@ public class CellInitiator {
                 if (RuleTypeEnum.DATE.getType().equals(rule.getType())){
                     currentCell.setIsDate(Boolean.TRUE);
                 }
+                if (RuleTypeEnum.SELECTIONS.getType().equals(rule.getType())) {
+                    rule.setSplit(currentCell.getSplit());
+                }
             }
         }
     }

@@ -31,3 +31,6 @@ build/
 .vscode/
 log.dir_IS_UNDEFINED
 
+### mac ###
+.DS_Store
+

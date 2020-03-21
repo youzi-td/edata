@@ -11,7 +11,7 @@
         <horizontalBody  firstValuePosition="b8">
             <cell title="资产名称" field="assetName" maxLength="20"/>
             <cell title="资产编码" field="assetCode" maxLength="20">
-                <!--                <rule type="custom" expression="AssetCodeValidator" values="${balanceSheet.f1}"/>-->
+                <!--                <rule type="custom" expression="com.ruochu.edata.custom.AssetCodeValidator" values="${balanceSheet.f1}"/>-->
                 <rule type="unique"/>
             </cell>
             <cell title="价值类型" field="valueType">

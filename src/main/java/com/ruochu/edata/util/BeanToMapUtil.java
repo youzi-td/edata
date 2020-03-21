@@ -1,7 +1,6 @@
 package com.ruochu.edata.util;
 
 import com.ruochu.edata.EDataBaseEnum;
-import com.ruochu.edata.annotation.EDataFormat;
 import com.ruochu.edata.constant.Constants;
 import com.ruochu.edata.xml.CellConf;
 
@@ -10,6 +9,9 @@ import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+import static com.ruochu.edata.util.EmptyChecker.isEmpty;
+import static com.ruochu.edata.util.EmptyChecker.notEmpty;
 
 /**
  * @author : RanPengCheng
@@ -20,7 +22,7 @@ public class BeanToMapUtil {
     private BeanToMapUtil(){}
 
     public static List<Map<String, String>> transformToStringMap(List<?> datas, List<CellConf> cells) {
-        if (EmptyChecker.isEmpty(datas)) {
+        if (isEmpty(datas)) {
             return new ArrayList<>();
         }
         List<Map<String, String>> list = new LinkedList<>();
@@ -32,15 +34,15 @@ public class BeanToMapUtil {
     }
 
     public static Map<String, String> transformToStringMap(Object data, List<CellConf> cells) {
-        if (EmptyChecker.isEmpty(data)) {
+        if (isEmpty(data)) {
             return null;
         }
         Map<String, String> result = new HashMap<>(cells.size());
         if (data instanceof Map) {
-            Map map = (Map) data;
+            Map<?,?> map = (Map<?,?>) data;
             for (CellConf cell : cells) {
                 String key = cell.getField();
-                result.put(key, transformToStringValue(map.get(key), null));
+                result.put(key, transformToStringValue(map.get(key), cell));
             }
         } else {
             Map<String, Field> fieldMap = ReflectUtil.getClassFields(data.getClass());
@@ -48,7 +50,7 @@ public class BeanToMapUtil {
             for (CellConf cell : cells) {
                 String key = cell.getField();
                 if (fieldMap.containsKey(key)) {
-                    result.put(key, transformToStringValue(getValue(data, key), fieldMap.get(key)));
+                    result.put(key, transformToStringValue(getValue(data, key), cell));
                 } else {
                     result.put(key, "");
                 }
@@ -71,7 +73,7 @@ public class BeanToMapUtil {
         return null;
     }
 
-    private static String transformToStringValue(Object value, Field field) {
+    private static String transformToStringValue(Object value, CellConf cell) {
         String result = "";
         if (EmptyChecker.notEmpty(value)) {
             if (value instanceof Double) {
@@ -79,11 +81,11 @@ public class BeanToMapUtil {
             }else if ("java.lang".equals(value.getClass().getPackage().getName())) {
                 result = value.toString();
             }else if (value instanceof Collection) {
-                result = collectionToString((Collection) value, field);
+                result = collectionToString((Collection<?>) value, cell);
             }else if (value instanceof Date) {
-                result = dateToString((Date) value, field);
+                result = dateToString((Date) value, cell);
             }else if ("java.time".equals(value.getClass().getPackage().getName())) {
-                result = javaTimeToString(value, field);
+                result = javaTimeToString(value, cell);
             }else if ((value instanceof Enum) && (value instanceof EDataBaseEnum)) {
                 result = ((EDataBaseEnum) value).getDescription();
             }else {
@@ -95,37 +97,33 @@ public class BeanToMapUtil {
     }
 
 
-    private static String collectionToString(Collection value, Field field) {
-        String split = Constants.SEPARATOR;
-        if (null != field && field.isAnnotationPresent(EDataFormat.class)) {
-            EDataFormat eDataFormat = field.getAnnotation(EDataFormat.class);
-            split = eDataFormat.split();
+    private static String collectionToString(Collection<?> value, CellConf cell) {
+        String split = cell.getSplit();
 
-        }
         split = ("".equals(split)) ? Constants.SEPARATOR : split;
         StringBuilder sb = new StringBuilder();
         for (Object obj : value) {
-            sb.append(transformToStringValue(obj, field)).append(split);
+            sb.append(transformToStringValue(obj, cell)).append(split);
         }
         sb.setLength(sb.length() - split.length());
         return sb.toString();
     }
 
 
-    private static String dateToString(Date value, Field field) {
-        String format = Constants.DEFAULT_DATE_FORMAT;
-        if (null != field && field.isAnnotationPresent(EDataFormat.class)) {
-            EDataFormat eDataFormat = field.getAnnotation(EDataFormat.class);
-            format = eDataFormat.format();
+    private static String dateToString(Date value, CellConf cell) {
+        String format = cell.getFormat();
+        if (isEmpty(format)) {
+            format = Constants.DEFAULT_DATE_FORMAT;
+        } else {
+            format = format.split(Constants.SEPARATOR)[0];
         }
 
         return Context.getDateFormat(format).format(value);
     }
 
-    private static String javaTimeToString(Object value, Field field) {
-        if (null != field && field.isAnnotationPresent(EDataFormat.class)) {
-            EDataFormat eDataFormat = field.getAnnotation(EDataFormat.class);
-            String format = eDataFormat.format();
+    private static String javaTimeToString(Object value, CellConf cell) {
+        if (notEmpty(cell.getFormat())) {
+            String format = cell.getFormat();
             if (EmptyChecker.notEmpty(format)) {
                 DateTimeFormatter formatter = Context.getDateTimeFormatter(format);
                 try {

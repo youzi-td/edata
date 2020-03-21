@@ -2,9 +2,11 @@ package com.ruochu.edata.read.result;
 
 import com.ruochu.edata.exception.ERuntimeException;
 import com.ruochu.edata.util.MapToBeanUtil;
+import com.ruochu.edata.xml.CellConf;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -18,24 +20,27 @@ public class DataMap implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private Map<String, String> data;
+    private List<CellConf> cells;
     private String sheetCode;
     private Integer rowIndex;
 
 
-    public DataMap(String sheetCode, int dataCapacity) {
+    public DataMap(String sheetCode, List<CellConf> cells) {
         this.sheetCode = sheetCode;
-        this.data = new HashMap<>(dataCapacity);
+        this.cells = cells;
+        this.data = new HashMap<>(cells.size());
     }
 
-    public DataMap(String sheetCode, int dataCapacity, Integer rowIndex) {
+    public DataMap(String sheetCode,  Integer rowIndex, List<CellConf> cells) {
         this.sheetCode = sheetCode;
         this.rowIndex = rowIndex;
-        this.data = new HashMap<>(dataCapacity);
+        this.cells = cells;
+        this.data = new HashMap<>(cells.size());
     }
 
     public <T> T getObject(Class<T> clazz) {
         try {
-            return MapToBeanUtil.transfer(data, clazz);
+            return MapToBeanUtil.transfer(data, clazz, cells);
         } catch (ReflectiveOperationException e) {
             throw new ERuntimeException(e);
         }

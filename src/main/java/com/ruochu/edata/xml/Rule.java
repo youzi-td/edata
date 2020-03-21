@@ -35,6 +35,8 @@ public class Rule implements Serializable {
     @XStreamAsAttribute
     private String errorMsg;
 
+    private String split;
+
 
     private String expression;
     private String values;
@@ -121,5 +123,13 @@ public class Rule implements Serializable {
 
     public void setValFields(List<String> valFields) {
         this.valFields = valFields;
+    }
+
+    public String getSplit() {
+        return split;
+    }
+
+    public void setSplit(String split) {
+        this.split = split;
     }
 }

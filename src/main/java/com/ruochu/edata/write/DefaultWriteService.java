@@ -4,7 +4,6 @@ import com.ruochu.edata.enums.TableTypeEnum;
 import com.ruochu.edata.exception.ERuntimeException;
 import com.ruochu.edata.xml.CellConf;
 import com.ruochu.edata.xml.SheetConf;
-import com.ruochu.edata.util.EmptyChecker;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -14,6 +13,9 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.ruochu.edata.util.EmptyChecker.isEmpty;
+import static com.ruochu.edata.util.EmptyChecker.notEmpty;
 
 /**
  * @author : RanPengCheng
@@ -28,15 +30,15 @@ public class DefaultWriteService extends AbstractWriteService {
     public void write(String templateExcelPath, OutputStream out) throws IOException {
         Workbook wb = getTemplateWorkbook(templateExcelPath);
         // 1.先写header
-        if (EmptyChecker.notEmpty(headerDataMap)) {
+        if (notEmpty(headerDataMap)) {
             writeHeader(wb);
         }
 
-        if (EmptyChecker.notEmpty(bodyDataMap)) {
+        if (notEmpty(bodyDataMap)) {
             // 2.写竖表
             for (SheetConf sheetConf : excelConf.getSheets()) {
                 String sheetCode = sheetConf.getSheetCode();
-                if (TableTypeEnum.VERTICAL.equals(sheetConf.getTableType()) && EmptyChecker.notEmpty(bodyDataMap.get(sheetCode))) {
+                if (TableTypeEnum.VERTICAL.equals(sheetConf.getTableType()) && notEmpty(bodyDataMap.get(sheetCode))) {
                     Sheet sheet = getSheet(wb, sheetConf.getSheetName());
                     writeCells(sheet, bodyDataMap.get(sheetCode).get(0), sheetConf.getVerticalBody().getCells());
                 }
@@ -49,7 +51,7 @@ public class DefaultWriteService extends AbstractWriteService {
             }
             for (SheetConf sheetConf : excelConf.getSheets()) {
                 String sheetCode = sheetConf.getSheetCode();
-                if (TableTypeEnum.HORIZONTAL.equals(sheetConf.getTableType()) && EmptyChecker.notEmpty(bodyDataMap.get(sheetCode))) {
+                if (TableTypeEnum.HORIZONTAL.equals(sheetConf.getTableType()) && notEmpty(bodyDataMap.get(sheetCode))) {
                     Sheet sheet = getSheet(wb, sheetConf.getSheetName());
                     writeBodyHorizontalBody(sheet, bodyDataMap.get(sheetCode), sheetConf.getHorizontalBody().getCells(), getCellStyle(wb), null);
                 }
@@ -68,7 +70,7 @@ public class DefaultWriteService extends AbstractWriteService {
 
     private Sheet getSheet(Workbook wb, String sheetName) {
         Sheet sheet = wb.getSheet(sheetName);
-        if (EmptyChecker.isEmpty(sheet)) {
+        if (isEmpty(sheet)) {
             throw new ERuntimeException("在模板中未找到表：sheetName=%s", sheetName);
         }
         return sheet;
@@ -79,14 +81,14 @@ public class DefaultWriteService extends AbstractWriteService {
 
             SheetConf sheetConf = excelConf.getSheetBySheetCode(sheetCode);
             Sheet sheet = getSheet(wb, sheetConf.getSheetName());
-            if (EmptyChecker.notEmpty(sheetConf.getHeader())) {
+            if (notEmpty(sheetConf.getHeader())) {
                 writeCells(sheet, headerDataMap.get(sheetCode), sheetConf.getHeader().getCells());
             }
         }
     }
 
     private void writeCells(Sheet sheet, Map<String, String> dataMap, List<CellConf> cells) {
-        if (EmptyChecker.isEmpty(dataMap)) {
+        if (isEmpty(dataMap)) {
             return;
         }
         for (CellConf cellConf : cells) {
@@ -115,7 +117,7 @@ public class DefaultWriteService extends AbstractWriteService {
 
         for (String sheetCode : bodyDataMap.keySet()) {
             SheetConf sheetConf = excelConf.getSheetBySheetCode(sheetCode);
-            if (EmptyChecker.isEmpty(sheetConf)) {
+            if (isEmpty(sheetConf)) {
                 throw new ERuntimeException("未找到sheetCode[%s]对应的xml配置", sheetCode);
             }
             if (!TableTypeEnum.HORIZONTAL.equals(sheetConf.getTableType())) {
@@ -133,7 +135,7 @@ public class DefaultWriteService extends AbstractWriteService {
             this.writeTitle4NoneTemplate(sheet, cells, cellStyle, colWidthMap);
 
             List<Map<String, String>> data = bodyDataMap.get(sheetCode);
-            if (EmptyChecker.notEmpty(data)) {
+            if (notEmpty(data)) {
                 writeBodyHorizontalBody(sheet, data, cells, cellStyle, colWidthMap);
             }
 
@@ -154,7 +156,7 @@ public class DefaultWriteService extends AbstractWriteService {
     }
 
     private void writeBodyHorizontalBody(Sheet sheet, List<Map<String, String>> data, List<CellConf> cells, CellStyle cellStyle, Map<Integer, Integer> colWidthMap) {
-        if (EmptyChecker.isEmpty(data)) {
+        if (isEmpty(data)) {
             return;
         }
         int rowIndex = cells.get(0).getRowIndex() - 1;
@@ -169,7 +171,7 @@ public class DefaultWriteService extends AbstractWriteService {
                     cell.setCellValue(sequence);
                 } else {
                     String value = map.get(cellConf.getField());
-                    if (EmptyChecker.notEmpty(colWidthMap)) {
+                    if (notEmpty(colWidthMap)) {
                         this.storeColumnMaxWidth(colIndex, value.getBytes().length, colWidthMap);
                     }
                     cell.setCellValue(value);

@@ -1,8 +1,5 @@
 package com.ruochu.edata.model;
 
-import com.ruochu.edata.annotation.EDataFormat;
-import com.alibaba.fastjson.annotation.JSONField;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,12 +18,9 @@ public class AssetModel {
     private BigDecimal assetValue;
     private Integer amount;
     private Date obtainDate;
-    @EDataFormat(split = "、")
     private List<UseIntentionEnum> useIntention;
 
-    @EDataFormat(format = "yyyy-MM-dd")
     private LocalDate localDate;
-    @EDataFormat(format = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime localDateTime;
     private ZonedDateTime zonedDateTime;
 
@@ -74,7 +68,6 @@ public class AssetModel {
         return valueType;
     }
 
-    @JSONField(deserialize = false)
     public void setValueType(ValueTypeEnum valueType) {
         this.valueType = valueType;
     }

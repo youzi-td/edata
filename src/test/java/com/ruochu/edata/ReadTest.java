@@ -1,5 +1,6 @@
 package com.ruochu.edata;
 
+import com.ruochu.edata.EdataFactory;
 import com.ruochu.edata.excel.model.EWorkbook;
 import com.ruochu.edata.exception.UnknownFileTypeException;
 import com.ruochu.edata.read.ReadService;

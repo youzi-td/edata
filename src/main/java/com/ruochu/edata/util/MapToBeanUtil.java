@@ -1,8 +1,8 @@
 package com.ruochu.edata.util;
 
 import com.ruochu.edata.EDataBaseEnum;
-import com.ruochu.edata.annotation.EDataFormat;
 import com.ruochu.edata.constant.Constants;
+import com.ruochu.edata.xml.CellConf;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -13,6 +13,9 @@ import java.text.ParseException;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static com.ruochu.edata.util.EmptyChecker.isEmpty;
+import static com.ruochu.edata.util.EmptyChecker.notEmpty;
+
 /**
  * @author : RanPengCheng
  * @date : 2020/3/18 15:53
@@ -22,15 +25,19 @@ public class MapToBeanUtil {
     private MapToBeanUtil(){}
 
 
-    public static <T> T transfer(Map<String, String> map, Class<T> clazz) throws ReflectiveOperationException {
+    public static <T> T transfer(Map<String, String> map, Class<T> clazz, List<CellConf> cells) throws ReflectiveOperationException {
         T instance = clazz.newInstance();
-        for (String fieldName : map.keySet()) {
+        if (isEmpty(cells)) {
+            return instance;
+        }
+        for (CellConf cell : cells) {
+            String fieldName = cell.getField();
             Method setter = ReflectUtil.getSetter(clazz, fieldName);
             if (null != setter && EmptyChecker.notEmpty(map.get(fieldName))) {
                 Class<?> parameterType = setter.getParameterTypes()[0];
                 Field field = ReflectUtil.getField(clazz, fieldName);
 
-                Object value = transformType(map.get(fieldName), parameterType, field);
+                Object value = transformType(map.get(fieldName), parameterType, cell, field);
 
                 setter.invoke(instance, value);
             }
@@ -39,7 +46,7 @@ public class MapToBeanUtil {
         return instance;
     }
 
-    private static Object transformType(String s, Class<?> parameterType, Field field) {
+    private static Object transformType(String s, Class<?> parameterType, CellConf cell, Field field) {
         String parameterTypeName = parameterType.getName();
         if("java.lang.String".equals(parameterTypeName)) {
             return s;
@@ -53,15 +60,15 @@ public class MapToBeanUtil {
             }
 
             if (Date.class.isAssignableFrom(parameterType)) {
-                value = toDate(s, field);
+                value = toDate(s, cell);
             } else if (BigDecimal.class.isAssignableFrom(parameterType)) {
                 value = new BigDecimal(s);
             } else if (Collection.class.isAssignableFrom(parameterType)) {
-                value = toCollection(s, field, parameterType);
+                value = toCollection(s, cell, parameterType, field);
             } else if (Enum.class.isAssignableFrom(parameterType) && EDataBaseEnum.class.isAssignableFrom(parameterType)) {
                 value = toEnum(s, parameterType);
             } else if ("java.time".equals(parameterType.getPackage().getName())) {
-                value = toTime(s, field, parameterType);
+                value = toTime(s, cell, parameterType);
             }
 
         } catch (Exception e) {
@@ -72,16 +79,15 @@ public class MapToBeanUtil {
     }
 
     @SuppressWarnings("unchecked")
-    private static Object toCollection(String s, Field field, Class<?> parameterType) throws ReflectiveOperationException {
+    private static Object toCollection(String s, CellConf cell, Class<?> parameterType, Field field) throws ReflectiveOperationException {
 
         if (field == null) {
             return null;
         }
 
-        String split = Constants.SEPARATOR;
-        if (field.isAnnotationPresent(EDataFormat.class)) {
-            EDataFormat eDataFormat = field.getAnnotation(EDataFormat.class);
-            split = eDataFormat.split();
+        String split = cell.getSplit();
+        if (isEmpty(split)) {
+            split = Constants.SEPARATOR;
         }
         String[] values = s.split(split);
 
@@ -105,7 +111,7 @@ public class MapToBeanUtil {
             Class<?> clazz = (Class<?>) pt.getActualTypeArguments()[0];
 
             for (String v : values) {
-                value.add(transformType(v, clazz, null));
+                value.add(transformType(v, clazz, cell, null));
             }
 
             return value;
@@ -124,11 +130,10 @@ public class MapToBeanUtil {
         return null;
     }
 
-    private static Object toTime(String s, Field field, Class<?> parameterType) throws ReflectiveOperationException {
+    private static Object toTime(String s, CellConf cell, Class<?> parameterType) throws ReflectiveOperationException {
 
-        if (field != null && field.isAnnotationPresent(EDataFormat.class)) {
-            EDataFormat eDataFormat = field.getAnnotation(EDataFormat.class);
-            DateTimeFormatter dateTimeFormatter = Context.getDateTimeFormatter(eDataFormat.format());
+        if (notEmpty(cell.getFormat())) {
+            DateTimeFormatter dateTimeFormatter = Context.getDateTimeFormatter(cell.getFormat());
 
             Method parse = parameterType.getMethod("parse", CharSequence.class, DateTimeFormatter.class);
             return parse.invoke(null, s, dateTimeFormatter);
@@ -138,14 +143,12 @@ public class MapToBeanUtil {
         return parse.invoke(null, s);
     }
 
-    private static Date toDate(String s, Field field) throws ParseException {
-        String format = "";
-        if (field != null && field.isAnnotationPresent(EDataFormat.class)) {
-            EDataFormat eDataFormat = field.getAnnotation(EDataFormat.class);
-            format = eDataFormat.format();
-        }
-        if (EmptyChecker.isEmpty(format)) {
+    private static Date toDate(String s, CellConf cell) throws ParseException {
+        String format = cell.getFormat();
+        if (isEmpty(format)) {
             format = Constants.DEFAULT_DATE_FORMAT;
+        } else {
+            format = format.split(Constants.SEPARATOR)[0];
         }
 
         return Context.getDateFormat(format).parse(s);

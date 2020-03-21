@@ -1,5 +1,6 @@
 package com.ruochu.edata.xml;
 
+import com.ruochu.edata.constant.Constants;
 import com.thoughtworks.xstream.annotations.XStreamAsAttribute;
 import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
@@ -69,9 +70,16 @@ public class CellConf implements Serializable {
     @XStreamAsAttribute
     private Boolean autoSequence = Boolean.FALSE;
 
+    @XStreamAsAttribute
+    private String split = Constants.SEPARATOR;
+
 
     private boolean isNumber = Boolean.FALSE;
     private boolean isDate = Boolean.FALSE;
+
+    public String getSplit() {
+        return split;
+    }
 
     public Boolean getAutoSequence() {
         return autoSequence;
