@@ -1,10 +1,10 @@
 package com.ruochu.edata.xml.init;
 
-import com.ruochu.edata.xml.CellConf;
-import com.ruochu.edata.xml.HeaderConf;
 import com.ruochu.edata.exception.XmlConfigException;
 import com.ruochu.edata.util.CoordinateUtil;
 import com.ruochu.edata.util.EmptyChecker;
+import com.ruochu.edata.xml.CellConf;
+import com.ruochu.edata.xml.HeaderConf;
 
 /**
  * 表头Initiator

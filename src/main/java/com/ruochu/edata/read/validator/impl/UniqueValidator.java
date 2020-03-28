@@ -1,9 +1,13 @@
 package com.ruochu.edata.read.validator.impl;
 
-import com.ruochu.edata.xml.Rule;
-import com.ruochu.edata.read.validator.IRuleValidator;
 
-import java.util.*;
+import com.ruochu.edata.read.validator.IRuleValidator;
+import com.ruochu.edata.xml.Rule;
+
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  *

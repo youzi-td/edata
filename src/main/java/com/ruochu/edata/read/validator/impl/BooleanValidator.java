@@ -1,8 +1,8 @@
 package com.ruochu.edata.read.validator.impl;
 
 import com.ruochu.edata.exception.ERuntimeException;
-import com.ruochu.edata.xml.Rule;
 import com.ruochu.edata.read.validator.IRuleValidator;
+import com.ruochu.edata.xml.Rule;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;

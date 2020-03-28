@@ -11,13 +11,14 @@
     <xs:attribute type="xs:string" name="field" use="required"/>
     <xs:attribute type="xs:string" name="position" use="optional"/>
     <xs:attribute type="valTypeEnum" name="valType" use="optional"/>
-    <xs:attribute type="xs:boolean" name="autoSequence" use="optional"/>
+    <xs:attribute type="xs:boolean" name="autoSequence" use="optional" default="false"/>
     <xs:attribute type="xs:integer" name="maxLength" use="optional"/>
     <xs:attribute type="xs:string" name="format" use="optional"/>
-    <xs:attribute type="xs:boolean" name="required" use="optional"/>
-    <xs:attribute type="xs:boolean" name="unique" use="optional"/>
+    <xs:attribute type="xs:boolean" name="required" use="optional" default="true"/>
+    <xs:attribute type="xs:boolean" name="unique" use="optional" default="false"/>
     <xs:attribute type="xs:string" name="split" use="optional"/>
-    <xs:attribute type="xs:boolean" name="followTitle" use="optional"/>
+<!--    <xs:attribute type="xs:boolean" name="followTitle" use="optional"/>-->
+    <xs:attribute type="xs:string" name="writeDefault" use="optional"/>
   </xs:complexType>
   <xs:complexType name="headerCellType" mixed="true">
     <xs:choice maxOccurs="unbounded" minOccurs="0">
@@ -28,13 +29,13 @@
     <xs:attribute type="xs:string" name="field" use="required"/>
     <xs:attribute type="xs:string" name="position" use="required"/>
     <xs:attribute type="valTypeEnum" name="valType" use="optional"/>
-    <xs:attribute type="xs:boolean" name="autoSequence" use="optional"/>
     <xs:attribute type="xs:integer" name="maxLength" use="optional"/>
     <xs:attribute type="xs:string" name="format" use="optional"/>
-    <xs:attribute type="xs:boolean" name="required" use="optional"/>
-    <xs:attribute type="xs:boolean" name="unique" use="optional"/>
+    <xs:attribute type="xs:boolean" name="required" use="optional" default="true"/>
+    <xs:attribute type="xs:boolean" name="unique" use="optional" default="false"/>
     <xs:attribute type="xs:string" name="split" use="optional"/>
-    <xs:attribute type="xs:boolean" name="followTitle" use="optional"/>
+<!--    <xs:attribute type="xs:boolean" name="followTitle" use="optional"/>-->
+    <xs:attribute type="xs:string" name="writeDefault" use="optional"/>
   </xs:complexType>
   <xs:simpleType name="valTypeEnum">
     <xs:restriction base="xs:string">
@@ -44,7 +45,6 @@
   </xs:simpleType>
   <xs:simpleType name="ruleTypeEnum">
     <xs:restriction base="xs:string">
-      <xs:enumeration value="number"/>
       <xs:enumeration value="maxLength"/>
       <xs:enumeration value="required"/>
       <xs:enumeration value="selection"/>
@@ -54,7 +54,6 @@
       <xs:enumeration value="boolean"/>
       <xs:enumeration value="custom"/>
       <xs:enumeration value="unique"/>
-      <xs:enumeration value="date"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:complexType name="headerType">

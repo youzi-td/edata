@@ -52,7 +52,7 @@ public class BeanToMapUtil {
                 if (fieldMap.containsKey(key)) {
                     result.put(key, transformToStringValue(getValue(data, key), cell));
                 } else {
-                    result.put(key, "");
+                    result.put(key, cell.getWriteDefault());
                 }
             }
         }
@@ -76,8 +76,14 @@ public class BeanToMapUtil {
     private static String transformToStringValue(Object value, CellConf cell) {
         String result = "";
         if (EmptyChecker.notEmpty(value)) {
+            if (value instanceof Number) {
+                cell.setIsNumber(true);
+            }
             if (value instanceof Double) {
                 result = doubleToString((Double) value);
+            }else if (cell.isPercentNumber() && value instanceof Number) {
+                cell.setIsNumber(false);
+                result = Context.getNumberFormat(cell.getFormat()).format(value);
             }else if ("java.lang".equals(value.getClass().getPackage().getName())) {
                 result = value.toString();
             }else if (value instanceof Collection) {
@@ -93,7 +99,7 @@ public class BeanToMapUtil {
             }
         }
 
-        return result;
+        return "".equals(result) ? cell.getWriteDefault() : result;
     }
 
 

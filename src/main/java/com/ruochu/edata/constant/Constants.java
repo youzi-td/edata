@@ -3,7 +3,7 @@ package com.ruochu.edata.constant;
 import java.util.regex.Pattern;
 
 /**
- * {描述}
+ * 常量类
  *
  * @author RanPengCheng
  * @date 2019/7/12 21:45
@@ -26,5 +26,7 @@ public class Constants {
     public static final String FIELD_FLAG = "${}";
 
     public static final Pattern NUMBER_PATTERN = Pattern.compile("([-+])?(0|[1-9]\\d+)(\\.\\d+)?");
+
+    public static final Pattern RGB_PATTERN = Pattern.compile("#[0-9a-fA-F]{6}");
 
 }

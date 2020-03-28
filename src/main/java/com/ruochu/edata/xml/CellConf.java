@@ -73,9 +73,26 @@ public class CellConf implements Serializable {
     @XStreamAsAttribute
     private String split = Constants.SEPARATOR;
 
+    @XStreamAsAttribute
+    private String writeDefault = "";
+
 
     private boolean isNumber = Boolean.FALSE;
     private boolean isDate = Boolean.FALSE;
+    /** 是否为百分比的数字 */
+    private boolean isPercentNumber;
+
+    public String getWriteDefault() {
+        return writeDefault;
+    }
+
+    public boolean isPercentNumber() {
+        return isPercentNumber;
+    }
+
+    public void setPercentNumber(boolean percentNumber) {
+        isPercentNumber = percentNumber;
+    }
 
     public String getSplit() {
         return split;

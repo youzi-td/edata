@@ -22,13 +22,20 @@ import static com.ruochu.edata.util.EmptyChecker.notEmpty;
  * @date : 2020/3/16 21:19
  */
 public class DefaultWriteService extends AbstractWriteService {
+    private static final int MAX_AUTO_WIDTH = 20000;
+
+    private String bgKeyPreValue = null;
+    private int bgAlterCount = 0;
+    private Map<String, CellStyle[]> styleMap;
+
     public DefaultWriteService(String xmlPath) {
         super(xmlPath);
     }
 
     @Override
     public void write(String templateExcelPath, OutputStream out) throws IOException {
-        Workbook wb = getTemplateWorkbook(templateExcelPath);
+       super.write(templateExcelPath, out);
+
         // 1.先写header
         if (notEmpty(headerDataMap)) {
             writeHeader(wb);
@@ -53,7 +60,7 @@ public class DefaultWriteService extends AbstractWriteService {
                 String sheetCode = sheetConf.getSheetCode();
                 if (TableTypeEnum.HORIZONTAL.equals(sheetConf.getTableType()) && notEmpty(bodyDataMap.get(sheetCode))) {
                     Sheet sheet = getSheet(wb, sheetConf.getSheetName());
-                    writeBodyHorizontalBody(sheet, bodyDataMap.get(sheetCode), sheetConf.getHorizontalBody().getCells(), getCellStyle(wb), null);
+                    writeBodyHorizontalBody(sheet, sheetConf.getHorizontalBody().getCells(),null, sheetCode);
                 }
             }
         }
@@ -109,7 +116,7 @@ public class DefaultWriteService extends AbstractWriteService {
 
     @Override
     public void writeWithNoneTemplate(OutputStream out) throws IOException {
-        Workbook wb = getWorkbook();
+        super.writeWithNoneTemplate(out);
 
         if (wb instanceof XSSFWorkbook) {
             wb = new SXSSFWorkbook((XSSFWorkbook) wb);
@@ -136,7 +143,7 @@ public class DefaultWriteService extends AbstractWriteService {
 
             List<Map<String, String>> data = bodyDataMap.get(sheetCode);
             if (notEmpty(data)) {
-                writeBodyHorizontalBody(sheet, data, cells, cellStyle, colWidthMap);
+                writeBodyHorizontalBody(sheet, cells, colWidthMap, sheetCode);
             }
 
             // 宽度自适应
@@ -155,15 +162,24 @@ public class DefaultWriteService extends AbstractWriteService {
         }
     }
 
-    private void writeBodyHorizontalBody(Sheet sheet, List<Map<String, String>> data, List<CellConf> cells, CellStyle cellStyle, Map<Integer, Integer> colWidthMap) {
+    private void writeBodyHorizontalBody(Sheet sheet, List<CellConf> cells, Map<Integer, Integer> colWidthMap, String sheetCode) {
+        CellStyle cellStyle = getCellStyle(wb);
+        List<Map<String, String>> data = bodyDataMap.get(sheetCode);
         if (isEmpty(data)) {
             return;
         }
         int rowIndex = cells.get(0).getRowIndex() - 1;
         int sequence = 1;
+        this.bgKeyPreValue = null;
+        this.bgAlterCount = 0;
 
         for (Map<String, String> map : data) {
             Row row = sheet.createRow(rowIndex);
+
+            if (bgAlterMap.get(sheetCode)) {
+                cellStyle = initBgStyle(sheetCode, map, cellStyle);
+            }
+
             for (CellConf cellConf : cells) {
                 int colIndex = cellConf.getColIndex() - 1;
                 Cell cell = row.createCell(colIndex);
@@ -174,13 +190,53 @@ public class DefaultWriteService extends AbstractWriteService {
                     if (notEmpty(colWidthMap)) {
                         this.storeColumnMaxWidth(colIndex, value.getBytes().length, colWidthMap);
                     }
-                    cell.setCellValue(value);
+                    if (cellConf.isNumber() && notEmpty(value)) {
+                        cell.setCellValue(Double.parseDouble(value));
+                    } else {
+                        cell.setCellValue(value);
+                    }
+
                 }
                 cell.setCellStyle(cellStyle);
             }
             rowIndex++;
             sequence++;
         }
+    }
+
+    private CellStyle initBgStyle(String sheetCode, Map<String, String> rowData, CellStyle cellStyle) {
+        List<IndexedColors> indexedColors = colorMap.get(sheetCode);
+        if (isEmpty(indexedColors)) {
+            return cellStyle;
+        }
+
+        if (styleMap == null) {
+            styleMap = new HashMap<>();
+        }
+
+        int size = indexedColors.size();
+        CellStyle[] styles = styleMap.computeIfAbsent(sheetCode, k -> new CellStyle[size]);
+
+        cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        String key = bgAlterFieldMap.get(sheetCode);
+
+        if (isEmpty(key)
+                || (
+                        notEmpty(key)
+                        && rowData.containsKey(key)
+                        && !rowData.get(key).equals(bgKeyPreValue)
+                    )) {
+            int i = bgAlterCount % size;
+            cellStyle = styles[i];
+            if (cellStyle == null) {
+                cellStyle = getCellStyle(wb);
+                styles[i] = cellStyle;
+            }
+            cellStyle.setFillForegroundColor(indexedColors.get(i).getIndex());
+            bgAlterCount++;
+            bgKeyPreValue = rowData.get(key);
+        }
+        return cellStyle;
     }
 
     private void writeTitle4NoneTemplate(Sheet sheet, List<CellConf> cells, CellStyle cellStyle, Map<Integer, Integer> colWidthMap) {
@@ -204,7 +260,7 @@ public class DefaultWriteService extends AbstractWriteService {
         Integer maxWidth = colWidthMap.get(colIndex);
         maxWidth = maxWidth == null ? 0 : maxWidth;
         if (length > maxWidth) {
-            colWidthMap.put(colIndex, length);
+            colWidthMap.put(colIndex, Math.min(length, MAX_AUTO_WIDTH));
         }
     }
 
@@ -221,4 +277,6 @@ public class DefaultWriteService extends AbstractWriteService {
 
         return cellStyle;
     }
+
+
 }

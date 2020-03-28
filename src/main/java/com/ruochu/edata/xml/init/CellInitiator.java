@@ -1,13 +1,13 @@
 package com.ruochu.edata.xml.init;
 
-import com.ruochu.edata.xml.CellConf;
-import com.ruochu.edata.xml.Rule;
 import com.ruochu.edata.constant.Constants;
 import com.ruochu.edata.enums.RuleTypeEnum;
 import com.ruochu.edata.enums.ValTypeEnum;
 import com.ruochu.edata.exception.XmlConfigException;
 import com.ruochu.edata.util.CoordinateUtil;
 import com.ruochu.edata.util.EmptyChecker;
+import com.ruochu.edata.xml.CellConf;
+import com.ruochu.edata.xml.Rule;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +61,15 @@ public class CellInitiator {
             Rule rule = new Rule();
             rule.setType(valType);
             rule.setXmlExpression(currentCell.getFormat());
+
+            if (currentCell.isPercentNumber()) {
+                String format = currentCell.getFormat();
+                format = format.substring(0, format.length() - 1);
+                String[] split = format.split(Constants.SEPARATOR);
+                format = String.format("%s,%s", Integer.parseInt(split[0]) - 2, Integer.parseInt(split[1]) + 2);
+                rule.setXmlExpression(format);
+            }
+
             rules.add(rule);
         }
 
@@ -139,26 +148,39 @@ public class CellInitiator {
         xyMap.put(position, title);
 
 
-        if (isRead){
-            String valType = currentCell.getValType();
-            if (null != valType){
-                if (!ValTypeEnum.exist(valType)){
-                    throw new XmlConfigException("不合法的valType[" + valType + "]");
+        String valType = currentCell.getValType();
+        if (null != valType){
+            if (!ValTypeEnum.exist(valType)){
+                throw new XmlConfigException("不合法的valType[" + valType + "]");
+            }
+
+            String format = currentCell.getFormat();
+            if (ValTypeEnum.NUMBER.getType().equals(valType)){
+                String newFormat = format;
+                if (format.endsWith("%")) {
+                    currentCell.setPercentNumber(true);
+                    newFormat = format.substring(0, format.length() - 1);
                 }
 
-                String format = currentCell.getFormat();
-                if (ValTypeEnum.NUMBER.getType().equals(valType)){
-                    if (EmptyChecker.isEmpty(format)){
-                        throw new XmlConfigException("number类型必须指定数字格式format，格式为:[整数位,小数位]");
-                    }
-                    if (!format.matches(Constants.NUMBER_FORMAT)){
+                if (EmptyChecker.isEmpty(newFormat)){
+                    throw new XmlConfigException("number类型必须指定数字格式format，格式为:[整数位,小数位]");
+                }
+
+                if (!newFormat.matches(Constants.NUMBER_FORMAT)){
+                    throw new XmlConfigException("数字格式format[" + format + "]不合法，格式为:[整数位,小数位]");
+                }
+
+                if (currentCell.isPercentNumber()) {
+                    String[] split = newFormat.split(Constants.SEPARATOR);
+                    newFormat = String.format("%s,%s", Integer.parseInt(split[0]) - 2, Integer.parseInt(split[1]) + 2);
+                    if (!newFormat.matches(Constants.NUMBER_FORMAT)){
                         throw new XmlConfigException("数字格式format[" + format + "]不合法，格式为:[整数位,小数位]");
                     }
                 }
+            }
 
-                if (ValTypeEnum.DATE.getType().equals(format) && EmptyChecker.isEmpty(format)){
-                    currentCell.setFormat(Constants.DEFAULT_DATE_FORMAT);
-                }
+            if (ValTypeEnum.DATE.getType().equals(format) && EmptyChecker.isEmpty(format)){
+                currentCell.setFormat(Constants.DEFAULT_DATE_FORMAT);
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.ruochu.edata.read.validator;
 
+
 import com.ruochu.edata.xml.Rule;
 
 /**

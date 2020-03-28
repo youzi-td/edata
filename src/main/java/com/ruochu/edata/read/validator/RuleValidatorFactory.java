@@ -1,7 +1,8 @@
 package com.ruochu.edata.read.validator;
 
-import com.ruochu.edata.exception.ERuntimeException;
+
 import com.ruochu.edata.enums.RuleTypeEnum;
+import com.ruochu.edata.exception.ERuntimeException;
 import com.ruochu.edata.read.validator.impl.*;
 
 import java.util.HashMap;

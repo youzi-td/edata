@@ -69,7 +69,6 @@ public class WriteTest {
         assetModel.setZonedDateTime(ZonedDateTime.now());
 
 
-
         ExcelConf excelConf = XmlUtil.parseXmlConfig("xml/write.xml", false);
 
         Map<String, String> stringStringMap = BeanToMapUtil.transformToStringMap(assetModel, excelConf.getSheets().get(0).getHorizontalBody().getCells());
@@ -93,7 +92,7 @@ public class WriteTest {
         writeService.addBodyData("assetInfo", list);
         System.out.println("data:" + (System.currentTimeMillis() - l));
 
-        writeService.excelType(ExcelType.XLS);
+        writeService.excelType4NoneTemplate(ExcelType.XLS);
 //        writeService.offXlsxHorizontalCacheWrite();
 
         l = System.currentTimeMillis();
@@ -161,6 +160,7 @@ public class WriteTest {
 
         return assetModel;
     }
+
     private static final Random RANDOM = new Random();
     private static final String STR = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -184,7 +184,6 @@ public class WriteTest {
         }
         return list;
     }
-
 
 
     @Test

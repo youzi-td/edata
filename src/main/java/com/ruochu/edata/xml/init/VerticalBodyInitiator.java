@@ -1,10 +1,10 @@
 package com.ruochu.edata.xml.init;
 
+import com.ruochu.edata.exception.XmlConfigException;
+import com.ruochu.edata.util.EmptyChecker;
 import com.ruochu.edata.xml.BodyConf;
 import com.ruochu.edata.xml.CellConf;
 import com.ruochu.edata.xml.Rectangle;
-import com.ruochu.edata.exception.XmlConfigException;
-import com.ruochu.edata.util.EmptyChecker;
 
 import java.util.ArrayList;
 import java.util.List;

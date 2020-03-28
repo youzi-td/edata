@@ -15,6 +15,7 @@ import com.ruochu.edata.util.Context;
 import com.ruochu.edata.util.EmptyChecker;
 import com.ruochu.edata.xml.*;
 
+import java.text.ParseException;
 import java.util.*;
 
 import static com.ruochu.edata.constant.Constants.NUMBER_PATTERN;
@@ -171,6 +172,13 @@ public class DefaultReadService extends AbstractReadService {
         if (excelConf.getGlobalFilter().isIgnore(cell, value) || cSheetConf.getValueFilter().isIgnore(cell, value)){
             value = "";
         } else if (EmptyChecker.notEmpty(value)) {
+            if (cell.isPercentNumber() && value.endsWith("%")) {
+                try {
+                    value = Context.getDateFormat(cell.getFormat()).parse(value).toString();
+                } catch (ParseException e) {
+                    return value;
+                }
+            }
             if (cell.isDate() && NUMBER_PATTERN.matcher(value).matches()) {
                 String format = "";
                 for (Rule rule : cell.getRules()) {

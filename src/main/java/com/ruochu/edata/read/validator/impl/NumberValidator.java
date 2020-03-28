@@ -1,9 +1,9 @@
 package com.ruochu.edata.read.validator.impl;
 
 import com.ruochu.edata.constant.Constants;
-import com.ruochu.edata.xml.Rule;
 import com.ruochu.edata.read.validator.IRuleValidator;
 import com.ruochu.edata.util.EmptyChecker;
+import com.ruochu.edata.xml.Rule;
 
 import java.util.HashMap;
 import java.util.Map;
