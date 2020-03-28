@@ -628,7 +628,7 @@
 ###### 1）导入
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
-<excel xmlns="cn/yzw/edata/read-write.xsd"> <!-- 引入schema -->
+<excel xmlns="com/ruochu/edata/read-write.xsd"> <!-- 引入schema -->
     <sheet sheetName="资产信息表-横表" sheetCode="assetInfo">
         <header>
             <cell title="单位名称" field="unitName" position="c3"/>
@@ -684,7 +684,7 @@ public class PriceValidator implements ICustomValidator {
 ###### 2）导出
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
-<excel xmlns="cn/yzw/edata/read-write.xsd">
+<excel xmlns="com/ruochu/edata/read-write.xsd">
     <sheet sheetName="资产信息表-横表" sheetCode="assetInfo">
         <header>
             <cell title="单位名称" field="unitName" position="c3"/>
@@ -713,7 +713,7 @@ public class PriceValidator implements ICustomValidator {
 ![竖表导入模板](images/read-v-excel-t.jpg)
 ```xml
 <?xml version="1.0" encoding="UTF-8" ?>
-<excel xmlns="cn/yzw/edata/read-write.xsd">
+<excel xmlns="com/ruochu/edata/read-write.xsd">
     <sheet sheetCode="balanceSheet" sheetName="资产负债表-竖表">
         <header>
             <cell title="编制单位" field="unitName" position="b3"/>
