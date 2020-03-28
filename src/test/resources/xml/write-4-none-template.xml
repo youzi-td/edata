@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<excel xmlns="cn/yzw/edata/read-write.xsd">
+<excel xmlns="com/ruochu/edata/read-write.xsd">
     <sheet sheetName="资产信息表-横表" sheetCode="assetInfo">
         <horizontalBody  firstValuePosition="a1">
             <cell title="序号" field="sequence" autoSequence="true"/>
@@ -21,6 +21,4 @@
         </horizontalBody>
         <!--<templateFilter values="填报日期：" positions="D4"/>-->
     </sheet>
-
-    <globalFilter values="(请填写）"/>
 </excel>

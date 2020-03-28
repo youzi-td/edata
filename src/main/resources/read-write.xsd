@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           targetNamespace="cn/yzw/edata/read-write.xsd">
+           targetNamespace="com/ruochu/edata/read-write.xsd">
   <xs:element name="excel" type="excelType"/>
   <xs:complexType name="cellType" mixed="true">
     <xs:choice maxOccurs="unbounded" minOccurs="0">
