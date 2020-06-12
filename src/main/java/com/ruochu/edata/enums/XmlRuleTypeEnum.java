@@ -1,5 +1,8 @@
 package com.ruochu.edata.enums;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 校验规则类型
  *
@@ -32,17 +35,20 @@ public enum XmlRuleTypeEnum {
         this.type = type;
     }
 
+    private static final Map<String, XmlRuleTypeEnum> MAP;
+
+    static {
+        MAP = new HashMap<>();
+        for (XmlRuleTypeEnum typeEnum : values()) {
+            MAP.put(typeEnum.getType(), typeEnum);
+        }
+    }
+
     public String getType() {
         return type;
     }
 
     public static boolean exist(String type){
-        for (XmlRuleTypeEnum rule : values()){
-            if (rule.type.equals(type)){
-                return true;
-            }
-        }
-        return false;
+        return MAP.containsKey(type);
     }
-
 }

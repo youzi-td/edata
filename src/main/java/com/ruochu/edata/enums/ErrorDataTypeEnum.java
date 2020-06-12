@@ -7,7 +7,7 @@ package com.ruochu.edata.enums;
  * @date 2019/7/21 11:43
  */
 public enum ErrorDataTypeEnum {
-    TEMAPLATE("template"),
+    TEMPLATE("template"),
     DATA("data")
     ;
     private String type;

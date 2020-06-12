@@ -652,7 +652,7 @@
             </cell>
             <cell title="数量" field="amount" valType="number" format="10,0"/>
             <cell title="单价" field="price" valType="number" format="10,2">
-                <rule type="custom" expression="cn.yzw.edata.custom.PriceValidator" values="${assetValue},${amount}"/>
+                <rule type="custom" expression="PriceValidator" values="${assetValue},${amount}"/>
             </cell>
             <cell title="取得日期" field="obtainDate" valType="date" format="yyyy-MM-dd" required="false"/>
             <cell title="使用方向" field="useIntention" required="false">

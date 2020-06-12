@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema attributeFormDefault="qualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           targetNamespace="com/ruochu/edata/read-write.xsd">
+           targetNamespace="cn/yzw/edata/read-write.xsd">
   <xs:element name="excel" type="excelType"/>
-  <xs:complexType name="cellType" mixed="true">
+
+  <xs:complexType name="hCellType" mixed="true">
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element type="ruleType" name="rule"/>
       <xs:element type="conditionType" name="condition"/>
     </xs:choice>
     <xs:attribute type="xs:string" name="title" use="required"/>
     <xs:attribute type="xs:string" name="field" use="required"/>
-    <xs:attribute type="xs:string" name="position" use="optional"/>
     <xs:attribute type="valTypeEnum" name="valType" use="optional"/>
     <xs:attribute type="xs:boolean" name="autoSequence" use="optional" default="false"/>
     <xs:attribute type="xs:integer" name="maxLength" use="optional"/>
@@ -17,10 +17,11 @@
     <xs:attribute type="xs:boolean" name="required" use="optional" default="true"/>
     <xs:attribute type="xs:boolean" name="unique" use="optional" default="false"/>
     <xs:attribute type="xs:string" name="split" use="optional"/>
-<!--    <xs:attribute type="xs:boolean" name="followTitle" use="optional"/>-->
+    <xs:attribute type="xs:int" name="colIndex" use="optional"/>
     <xs:attribute type="xs:string" name="writeDefault" use="optional"/>
+    <xs:attribute type="xs:string" name="writeFormat" use="optional"/>
   </xs:complexType>
-  <xs:complexType name="headerCellType" mixed="true">
+  <xs:complexType name="vCellType" mixed="true">
     <xs:choice maxOccurs="unbounded" minOccurs="0">
       <xs:element type="ruleType" name="rule"/>
       <xs:element type="conditionType" name="condition"/>
@@ -36,11 +37,26 @@
     <xs:attribute type="xs:string" name="split" use="optional"/>
 <!--    <xs:attribute type="xs:boolean" name="followTitle" use="optional"/>-->
     <xs:attribute type="xs:string" name="writeDefault" use="optional"/>
+    <xs:attribute type="xs:string" name="writeFormat" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="dCellType" mixed="false">
+    <xs:attribute type="xs:string" name="title" use="required"/>
+    <xs:attribute type="xs:string" name="field" use="required"/>
+    <xs:attribute type="valTypeEnum" name="valType" use="optional"/>
+    <xs:attribute type="xs:boolean" name="autoSequence" use="optional" default="false"/>
+    <xs:attribute type="xs:string" name="format" use="optional"/>
+    <xs:attribute type="xs:string" name="split" use="optional"/>
+    <xs:attribute type="xs:int" name="colIndex" use="optional"/>
+    <xs:attribute type="xs:string" name="writeDefault" use="optional"/>
+    <xs:attribute type="xs:string" name="writeFormat" use="optional"/>
+    <xs:attribute type="xs:int" name="mergeCellFromRight" default="0" use="optional"/>
   </xs:complexType>
   <xs:simpleType name="valTypeEnum">
     <xs:restriction base="xs:string">
       <xs:enumeration value="number"/>
       <xs:enumeration value="date"/>
+      <xs:enumeration value="enum"/>
+      <xs:enumeration value="image"/>
     </xs:restriction>
   </xs:simpleType>
   <xs:simpleType name="ruleTypeEnum">
@@ -58,7 +74,7 @@
   </xs:simpleType>
   <xs:complexType name="headerType">
     <xs:sequence>
-      <xs:element type="headerCellType" name="cell" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element type="vCellType" name="cell" maxOccurs="unbounded" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
   <xs:complexType name="ruleType">
@@ -82,9 +98,10 @@
   </xs:complexType>
   <xs:complexType name="horizontalBodyType">
     <xs:sequence>
-      <xs:element type="cellType" name="cell" maxOccurs="unbounded" minOccurs="1"/>
+      <xs:element type="hCellType" name="cell" maxOccurs="unbounded" minOccurs="1"/>
     </xs:sequence>
     <xs:attribute type="xs:string" name="firstValuePosition" use="required"/>
+    <xs:attribute type="xs:short" name="rowHeight" use="optional"/>
   </xs:complexType>
   <xs:complexType name="sheetType">
     <xs:choice maxOccurs="unbounded" minOccurs="1">
@@ -115,7 +132,7 @@
   </xs:complexType>
   <xs:complexType name="rectangleType" mixed="true">
     <xs:choice maxOccurs="unbounded" minOccurs="0">
-      <xs:element type="cellType" name="cell" minOccurs="1"/>
+      <xs:element type="hCellType" name="cell" minOccurs="1"/>
     </xs:choice>
     <xs:attribute type="xs:string" name="firstCell" use="required"/>
     <xs:attribute type="xs:string" name="lastCell" use="required"/>
@@ -123,7 +140,8 @@
   <xs:complexType name="verticalBodyType">
     <xs:choice maxOccurs="unbounded" minOccurs="1">
       <xs:element type="rectangleType" name="rectangle"/>
-      <xs:element type="headerCellType" name="cell"/>
+      <xs:element type="vCellType" name="cell"/>
+      <xs:element type="dynamicRowType" name="dynamicRow"/>
     </xs:choice>
   </xs:complexType>
   <xs:complexType name="globalFilterType">
@@ -133,10 +151,20 @@
       </xs:extension>
     </xs:simpleContent>
   </xs:complexType>
+  <xs:complexType name="dynamicRowType">
+    <xs:choice maxOccurs="unbounded" minOccurs="1">
+       <xs:element type="dCellType" name="cell"/>
+    </xs:choice>
+    <xs:attribute type="xs:string" name="firstValuePosition" use="required"/>
+    <xs:attribute type="xs:string" name="field" use="required"/>
+    <xs:attribute type="xs:short" name="rowHeight" use="optional"/>
+  </xs:complexType>
   <xs:complexType name="excelType">
     <xs:sequence>
       <xs:element type="sheetType" name="sheet" maxOccurs="unbounded" minOccurs="1"/>
       <xs:element type="globalFilterType" name="globalFilter" maxOccurs="1"/>
     </xs:sequence>
+    <xs:attribute type="xs:boolean" name="checkTemplate" default="true"/>
+    <xs:attribute type="xs:boolean" name="checkSheetSequence" default="false"/>
   </xs:complexType>
 </xs:schema>

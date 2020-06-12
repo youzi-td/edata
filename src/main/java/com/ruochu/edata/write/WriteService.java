@@ -57,6 +57,11 @@ public interface WriteService {
     WriteService rowsBackgroundAlternate4Filed(String sheetCode, String field, IndexedColors... colors);
 
     /**
+     * 关闭文本自动换行
+     */
+    WriteService closeWrapText();
+
+    /**
      * 有模板导出
      * 注：流会自动关闭
      */

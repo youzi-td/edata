@@ -6,6 +6,7 @@ import com.thoughtworks.xstream.annotations.XStreamImplicit;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -76,11 +77,20 @@ public class CellConf implements Serializable {
     @XStreamAsAttribute
     private String writeDefault = "";
 
+    @XStreamAsAttribute
+    private String writeFormat;
 
-    private boolean isNumber = Boolean.FALSE;
+    @XStreamAsAttribute
+    private Integer mergeCellFromRight = 0;
+
     private boolean isDate = Boolean.FALSE;
     /** 是否为百分比的数字 */
     private boolean isPercentNumber;
+
+    private boolean isEnum = Boolean.FALSE;
+
+    private Map<String, String> enumKVMap;
+    private Map<String, String> enumVKMap;
 
     public String getWriteDefault() {
         return writeDefault;
@@ -170,19 +180,43 @@ public class CellConf implements Serializable {
         this.rules = rules;
     }
 
-    public boolean isNumber() {
-        return isNumber;
-    }
-
-    public void setIsNumber(boolean number) {
-        isNumber = number;
-    }
-
     public boolean isDate() {
         return isDate;
     }
 
     public void setIsDate(boolean date) {
         isDate = date;
+    }
+
+    public boolean isEnum() {
+        return isEnum;
+    }
+
+    public void setEnum(boolean anEnum) {
+        isEnum = anEnum;
+    }
+
+    public Map<String, String> getEnumKVMap() {
+        return enumKVMap;
+    }
+
+    public void setEnumKVMap(Map<String, String> enumKVMap) {
+        this.enumKVMap = enumKVMap;
+    }
+
+    public Map<String, String> getEnumVKMap() {
+        return enumVKMap;
+    }
+
+    public void setEnumVKMap(Map<String, String> enumVKMap) {
+        this.enumVKMap = enumVKMap;
+    }
+
+    public String getWriteFormat() {
+        return writeFormat;
+    }
+
+    public Integer getMergeCellFromRight() {
+        return mergeCellFromRight;
     }
 }

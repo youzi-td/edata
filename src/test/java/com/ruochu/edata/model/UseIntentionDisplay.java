@@ -1,12 +1,12 @@
 package com.ruochu.edata.model;
 
-import com.ruochu.edata.EDataBaseEnum;
+import com.ruochu.edata.EdataBaseDisplay;
 
 /**
  * @author : RanPengCheng
  * @date : 2020/3/16 16:29
  */
-public enum UseIntentionEnum implements EDataBaseEnum {
+public enum UseIntentionDisplay implements EdataBaseDisplay {
     SELF(1, "自用"),
     BORROW(2, "出借"),
     RENT(3, "出租"),
@@ -15,7 +15,7 @@ public enum UseIntentionEnum implements EDataBaseEnum {
     private Integer code;
     private String desc;
 
-    UseIntentionEnum(Integer code, String desc) {
+    UseIntentionDisplay(Integer code, String desc) {
         this.code = code;
         this.desc = desc;
     }
@@ -29,7 +29,7 @@ public enum UseIntentionEnum implements EDataBaseEnum {
     }
 
     @Override
-    public String getDescription() {
+    public String display() {
         return desc;
     }
 }

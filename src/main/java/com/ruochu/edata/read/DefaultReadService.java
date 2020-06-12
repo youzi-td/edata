@@ -19,6 +19,7 @@ import java.text.ParseException;
 import java.util.*;
 
 import static com.ruochu.edata.constant.Constants.NUMBER_PATTERN;
+import static com.ruochu.edata.util.EmptyChecker.notEmpty;
 
 /**
  * 导入的实现类
@@ -47,7 +48,7 @@ public class DefaultReadService extends AbstractReadService {
         // 校验模板
         if (excelConf.getCheckTemplate()) {
             errorDataList = new TemplateValidator(excelConf, templateWorkbook, userWorkbook).validate();
-            if (EmptyChecker.notEmpty(errorDataList)) {
+            if (notEmpty(errorDataList)) {
                 return new ReadResult(errorDataList, null, true);
             }
         }
@@ -82,7 +83,7 @@ public class DefaultReadService extends AbstractReadService {
         HeaderConf header = cSheetConf.getHeader();
         DataMap headerData = null;
         List<DataMap> bodyData = null;
-        if (EmptyChecker.notEmpty(header)) {
+        if (notEmpty(header)) {
             headerData = cellsValidate(header.getCells());
         }
 
@@ -131,7 +132,7 @@ public class DefaultReadService extends AbstractReadService {
     private boolean isBlankRow(List<CellConf> cells) {
         for (CellConf cell : cells){
             String value = uSheetData.getValue(cell.getRowIndex(), cell.getColIndex());
-            if (EmptyChecker.notEmpty(value)){
+            if (notEmpty(value)){
                 return false;
             }
         }
@@ -155,14 +156,15 @@ public class DefaultReadService extends AbstractReadService {
         List<Rule> rules = cell.getRules();
         List<Condition> conditions = cell.getConditions();
 
-        if (EmptyChecker.notEmpty(rules)) {
-            if (!ruleValidate(rules, cell, value)) {
-                return value;
-            }
+        if (notEmpty(rules) && !ruleValidate(rules, cell, value)) {
+            return value;
         }
 
-        if (EmptyChecker.notEmpty(conditions)) {
+        if (notEmpty(conditions)) {
             conditionValidate(conditions, cell, value);
+        }
+        if (cell.isEnum()) {
+            value = cell.getEnumVKMap().get(value);
         }
         return value;
     }
@@ -171,7 +173,7 @@ public class DefaultReadService extends AbstractReadService {
         String value = uSheetData.getValue(cell.getRowIndex(), cell.getColIndex());
         if (excelConf.getGlobalFilter().isIgnore(cell, value) || cSheetConf.getValueFilter().isIgnore(cell, value)){
             value = "";
-        } else if (EmptyChecker.notEmpty(value)) {
+        } else if (notEmpty(value)) {
             if (cell.isPercentNumber() && value.endsWith("%")) {
                 try {
                     value = Context.getDateFormat(cell.getFormat()).parse(value).toString();

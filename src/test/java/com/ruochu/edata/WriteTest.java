@@ -2,14 +2,15 @@ package com.ruochu.edata;
 
 import com.ruochu.edata.enums.ExcelType;
 import com.ruochu.edata.model.AssetModel;
-import com.ruochu.edata.model.UseIntentionEnum;
-import com.ruochu.edata.model.ValueTypeEnum;
+import com.ruochu.edata.model.UseIntentionDisplay;
+import com.ruochu.edata.model.ValueTypeDisplay;
 import com.ruochu.edata.util.BeanToMapUtil;
 import com.ruochu.edata.util.MapToBeanUtil;
 import com.ruochu.edata.util.XmlUtil;
 import com.ruochu.edata.write.WriteService;
 import com.ruochu.edata.xml.CellConf;
 import com.ruochu.edata.xml.ExcelConf;
+import org.apache.poi.ss.usermodel.IndexedColors;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -17,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -59,14 +61,15 @@ public class WriteTest {
         assetModel.setAssetName("name");
         assetModel.setAssetValue(new BigDecimal("10000000000.99"));
         assetModel.setObtainDate(new Date());
-        List<UseIntentionEnum> list = new ArrayList<>();
-        list.add(UseIntentionEnum.IDLE);
-        list.add(UseIntentionEnum.BORROW);
+        List<UseIntentionDisplay> list = new ArrayList<>();
+        list.add(UseIntentionDisplay.IDLE);
+        list.add(UseIntentionDisplay.BORROW);
         assetModel.setUseIntention(list);
-        assetModel.setValueType(ValueTypeEnum.HAS_VALUE);
+        assetModel.setValueType(ValueTypeDisplay.HAS_VALUE);
         assetModel.setLocalDate(LocalDate.now());
         assetModel.setLocalDateTime(LocalDateTime.now());
         assetModel.setZonedDateTime(ZonedDateTime.now());
+
 
 
         ExcelConf excelConf = XmlUtil.parseXmlConfig("xml/write.xml", false);
@@ -77,7 +80,7 @@ public class WriteTest {
 
     @Test
     public void testWrite4NoneTemplate() throws IOException {
-        int dataSize = 1;
+        int dataSize = 1000;
 
         List<AssetModel> list = new ArrayList<>(dataSize);
         for (int i = 0; i < dataSize; i++) {
@@ -95,6 +98,7 @@ public class WriteTest {
         writeService.excelType4NoneTemplate(ExcelType.XLS);
 //        writeService.offXlsxHorizontalCacheWrite();
 
+        writeService.rowsBackgroundAlternate4Filed("assetInfo", "assetCode", IndexedColors.WHITE, IndexedColors.GREEN);
         l = System.currentTimeMillis();
         writeService.writeWithNoneTemplate(new FileOutputStream(new File("/Users/ranpengcheng/Desktop/asset.xls")));
         System.out.println("" + (System.currentTimeMillis() - l));
@@ -102,7 +106,7 @@ public class WriteTest {
 
     @Test
     public void testWrite() throws IOException {
-        int dataSize = 1;
+        int dataSize = 100;
 
         List<AssetModel> list = new ArrayList<>(dataSize);
         for (int i = 0; i < dataSize; i++) {
@@ -135,6 +139,8 @@ public class WriteTest {
 //        writeService.excelType(ExcelType.XLS);
 //        writeService.offXlsxHorizontalCacheWrite();
 
+//        writeService.rowsBackgroundAlternate("assetInfo", IndexedColors.WHITE, IndexedColors.DARK_YELLOW);
+        writeService.rowsBackgroundAlternate4Filed("assetInfo", "assetCode", IndexedColors.WHITE, IndexedColors.GREEN);
         l = System.currentTimeMillis();
         writeService.write("template/testTemplate.xlsx", new FileOutputStream(new File("/Users/ranpengcheng/Desktop/asset2.xlsx")));
         System.out.println("" + (System.currentTimeMillis() - l));
@@ -149,29 +155,29 @@ public class WriteTest {
         assetModel.setAssetName(randomStr());
         assetModel.setAssetValue(new BigDecimal("10000000000.99"));
         assetModel.setObtainDate(new Date());
-        List<UseIntentionEnum> list = new ArrayList<>();
-        list.add(UseIntentionEnum.IDLE);
-        list.add(UseIntentionEnum.BORROW);
+        List<UseIntentionDisplay> list = new ArrayList<>();
+        list.add(UseIntentionDisplay.IDLE);
+        list.add(UseIntentionDisplay.BORROW);
         assetModel.setUseIntention(list);
-        assetModel.setValueType(ValueTypeEnum.HAS_VALUE);
+        assetModel.setValueType(ValueTypeDisplay.HAS_VALUE);
         assetModel.setLocalDate(LocalDate.now());
         assetModel.setLocalDateTime(LocalDateTime.now());
         assetModel.setZonedDateTime(ZonedDateTime.now());
+        assetModel.setEnumTest(RANDOM.nextInt(4));
 
         return assetModel;
     }
-
     private static final Random RANDOM = new Random();
     private static final String STR = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
     private String randomStr() {
-        int length = RANDOM.nextInt(30);
+        int length = RANDOM.nextInt(4);
         if (length < 1) {
             length = 1;
         }
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 15; i++) {
-            sb.append(STR.charAt(RANDOM.nextInt(35)));
+        for (int i = 0; i < length; i++) {
+            sb.append(STR.charAt(RANDOM.nextInt(3)));
         }
 
         return sb.toString();
@@ -184,6 +190,7 @@ public class WriteTest {
         }
         return list;
     }
+
 
 
     @Test
@@ -217,6 +224,16 @@ public class WriteTest {
         }
 
         System.out.println(System.currentTimeMillis() - l);
+    }
+
+
+    @Test
+    public void test4() {
+        String s = "123%";
+        System.out.println(s.substring(0, s.length() - 1));
+        System.out.println(s.endsWith("%"));
+
+        NumberFormat numberFormat = NumberFormat.getPercentInstance();
     }
 
 }

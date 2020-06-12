@@ -5,6 +5,10 @@ public class XmlConfigException extends RuntimeException {
         super(message);
     }
 
+    public XmlConfigException(String message, Object... format) {
+        super(String.format(message, format));
+    }
+
     public XmlConfigException(String message, Throwable cause) {
         super(message, cause);
     }

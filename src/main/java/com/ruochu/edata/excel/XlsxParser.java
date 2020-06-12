@@ -8,7 +8,6 @@ import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.xssf.eventusermodel.XSSFReader;
 import org.apache.poi.xssf.model.SharedStringsTable;
-import org.apache.poi.xssf.usermodel.XSSFRichTextString;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -43,24 +42,23 @@ public class XlsxParser extends DefaultHandler implements ExcelParser {
     public EWorkbook read(InputStream inp) throws IOException, OpenXML4JException, SAXException {
         OPCPackage pkg = OPCPackage.open(inp);
         XSSFReader reader = new XSSFReader(pkg);
-        SharedStringsTable sst = reader.getSharedStringsTable();
+        this.sst = reader.getSharedStringsTable();
 
         XMLReader parser = XMLReaderFactory.createXMLReader();
-        this.sst = sst;
         parser.setContentHandler(this);
 
         XSSFReader.SheetIterator sheets = (XSSFReader.SheetIterator) reader.getSheetsData();
         while (sheets.hasNext()) {
-            InputStream sheetstream = sheets.next();
+            InputStream sheetStream = sheets.next();
 
             currentESheet = new ESheet(sheets.getSheetName());
             eWorkbook.addSheet(currentESheet);
 
-            InputSource sheetSource = new InputSource(sheetstream);
+            InputSource sheetSource = new InputSource(sheetStream);
             try {
                 parser.parse(sheetSource);
             } finally {
-                sheetstream.close();
+                sheetStream.close();
             }
         }
 
@@ -95,7 +93,7 @@ public class XlsxParser extends DefaultHandler implements ExcelParser {
         // 这时characters()方法可能会被调用多次
         if (nextIsString) {
             int idx = Integer.parseInt(lastContents);
-            lastContents = new XSSFRichTextString(sst.getEntryAt(idx)).toString();
+            lastContents = sst.getItemAt(idx).toString();
             nextIsString = false;
         }
 

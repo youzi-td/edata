@@ -1,10 +1,12 @@
 package com.ruochu.edata.xml.init;
 
+import com.ruochu.edata.xml.BodyConf;
+import com.ruochu.edata.xml.CellConf;
 import com.ruochu.edata.exception.XmlConfigException;
 import com.ruochu.edata.util.CoordinateUtil;
 import com.ruochu.edata.util.EmptyChecker;
-import com.ruochu.edata.xml.BodyConf;
-import com.ruochu.edata.xml.CellConf;
+
+import static com.ruochu.edata.util.EmptyChecker.notEmpty;
 
 /**
  * 横表表体Initiator
@@ -38,6 +40,9 @@ public class HorizontalBodyInitiator {
         int col = position[0];
         for (CellConf cell : body.getCells()){
             cell.setRowIndex(row);
+            if (notEmpty(cell.getColIndex())) {
+                col = cell.getColIndex();
+            }
             cell.setColIndex(col++);
         }
     }

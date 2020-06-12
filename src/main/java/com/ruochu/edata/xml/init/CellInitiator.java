@@ -4,14 +4,16 @@ import com.ruochu.edata.constant.Constants;
 import com.ruochu.edata.enums.RuleTypeEnum;
 import com.ruochu.edata.enums.ValTypeEnum;
 import com.ruochu.edata.exception.XmlConfigException;
-import com.ruochu.edata.util.CoordinateUtil;
 import com.ruochu.edata.util.EmptyChecker;
 import com.ruochu.edata.xml.CellConf;
 import com.ruochu.edata.xml.Rule;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.ruochu.edata.util.EmptyChecker.isEmpty;
 
 /**
  * 单元格Initiator
@@ -32,7 +34,6 @@ public class CellInitiator {
         this.sheetCode = sheetCode;
     }
 
-
     void init(){
         for (CellConf cell : cells){
             this.currentCell = cell;
@@ -48,16 +49,38 @@ public class CellInitiator {
                     new ConditionInitiator(cell.getConditions(), cell.getTitle()).init();
                 }
             }
+            if (ValTypeEnum.ENUM.getType().equals(currentCell.getValType())) {
+                initEnumCell();
+            }
         }
+    }
+
+    private void initEnumCell() {
+        currentCell.setEnum(true);
+        String format = currentCell.getFormat();
+        String[] split = format.split(Constants.SEPARATOR);
+        Map<String, String> kvMap = new HashMap<>();
+        Map<String, String> vkMap = new HashMap<>();
+        for (String s : split) {
+            String[] f = s.trim().split(":");
+            if (f.length != 2) {
+                throw new XmlConfigException("format[%s]不合法，格式为 sysVal:excelVal,sysVal:excelVal...", format);
+            }
+            kvMap.put(f[0], f[1]);
+            vkMap.put(f[1], f[0]);
+        }
+
+        currentCell.setEnumKVMap(kvMap);
+        currentCell.setEnumVKMap(vkMap);
     }
 
     private void tidyRules() {
         String valType = currentCell.getValType();
         List<Rule> rules = currentCell.getRules();
-        if (EmptyChecker.isEmpty(rules)){
+        if (isEmpty(rules)){
             rules = new ArrayList<>();
         }
-        if (EmptyChecker.notEmpty(valType)){
+        if (EmptyChecker.notEmpty(valType) && RuleTypeEnum.exist(valType)){
             Rule rule = new Rule();
             rule.setType(valType);
             rule.setXmlExpression(currentCell.getFormat());
@@ -107,7 +130,6 @@ public class CellInitiator {
             currentCell.setRules(rules);
             for (Rule rule : rules){
                 if (RuleTypeEnum.NUMBER.getType().equals(rule.getType())){
-                    currentCell.setIsNumber(Boolean.TRUE);
                     return;
                 }
                 if (RuleTypeEnum.DATE.getType().equals(rule.getType())){
@@ -122,31 +144,21 @@ public class CellInitiator {
 
     private void checkAttr() {
         String title = currentCell.getTitle();
-        if (EmptyChecker.isEmpty(title)){
+        if (isEmpty(title)){
             throw new XmlConfigException("cell的title不能为空！");
         }
 
         String field = currentCell.getField();
-        if (EmptyChecker.isEmpty(field)){
+        if (isEmpty(field)){
             throw new XmlConfigException("cell的field不能为空，cell:" + title + "");
-        }else if (SheetInitiator.FIELDS_MAP.get().get(sheetCode).contains(field)){
-            throw new XmlConfigException("cell的field重复,field：" + field);
         }
-        SheetInitiator.FIELDS_MAP.get().get(sheetCode).add(field);
 
         // 坐标校验
         Integer rowIndex = currentCell.getRowIndex();
         Integer colIndex = currentCell.getColIndex();
-        if (EmptyChecker.isEmpty(rowIndex) || EmptyChecker.isEmpty(colIndex)){
+        if (isEmpty(rowIndex) || isEmpty(colIndex)){
             throw new XmlConfigException("坐标异常！cell:" + title);
         }
-        String position = CoordinateUtil.toExcelPosition(colIndex, rowIndex);
-        Map<String, String> xyMap = SheetInitiator.XYS_MAP.get().get(sheetCode);
-        if (xyMap.containsKey(position)){
-            throw new XmlConfigException("cell[" + title + "]与cell[" + xyMap.get(position) + "]的坐标重复！");
-        }
-        xyMap.put(position, title);
-
 
         String valType = currentCell.getValType();
         if (null != valType){
@@ -155,6 +167,10 @@ public class CellInitiator {
             }
 
             String format = currentCell.getFormat();
+            if (ValTypeEnum.ENUM.getType().equals(valType) && isEmpty(format)) {
+                throw new XmlConfigException("enum类型必须指定format，格式为 sysVal:excelVal,sysVal:excelVal...");
+            }
+
             if (ValTypeEnum.NUMBER.getType().equals(valType)){
                 String newFormat = format;
                 if (format.endsWith("%")) {
@@ -162,7 +178,7 @@ public class CellInitiator {
                     newFormat = format.substring(0, format.length() - 1);
                 }
 
-                if (EmptyChecker.isEmpty(newFormat)){
+                if (isEmpty(newFormat)){
                     throw new XmlConfigException("number类型必须指定数字格式format，格式为:[整数位,小数位]");
                 }
 
@@ -179,7 +195,7 @@ public class CellInitiator {
                 }
             }
 
-            if (ValTypeEnum.DATE.getType().equals(format) && EmptyChecker.isEmpty(format)){
+            if (ValTypeEnum.DATE.getType().equals(format) && isEmpty(format)){
                 currentCell.setFormat(Constants.DEFAULT_DATE_FORMAT);
             }
         }

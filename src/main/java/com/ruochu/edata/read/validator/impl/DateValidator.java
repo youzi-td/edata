@@ -1,6 +1,5 @@
 package com.ruochu.edata.read.validator.impl;
 
-
 import com.ruochu.edata.constant.Constants;
 import com.ruochu.edata.read.validator.IRuleValidator;
 import com.ruochu.edata.util.Context;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<excel xmlns="com/ruochu/edata/read-write.xsd">
+<excel xmlns="cn/yzw/edata/read-write.xsd">
     <sheet sheetName="资产信息表-横表" sheetCode="assetInfo">
         <header>
             <cell title="单位名称" field="unitName" position="c3"/>
@@ -11,7 +11,7 @@
         <horizontalBody  firstValuePosition="b8">
             <cell title="资产名称" field="assetName" maxLength="20"/>
             <cell title="资产编码" field="assetCode" maxLength="20">
-                <!--                <rule type="custom" expression="com.ruochu.edata.custom.AssetCodeValidator" values="${balanceSheet.f1}"/>-->
+                <!--                <rule type="custom" expression="AssetCodeValidator" values="${balanceSheet.f1}"/>-->
                 <rule type="unique"/>
             </cell>
             <cell title="价值类型" field="valueType">
@@ -38,7 +38,7 @@
 
     <sheet sheetCode="balanceSheet" sheetName="资产负债表-竖表">
         <header>
-            <cell title="编制单位" field="unitName" position="a3" />
+            <cell title="编制单位" field="unitName" position="a3"/>
             <cell title="填报日期" field="fillDate" position="e3"/>
             <cell title="填报人" field="filler" position="g3"/>
         </header>

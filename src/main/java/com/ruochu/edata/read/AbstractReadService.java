@@ -9,7 +9,6 @@ import com.ruochu.edata.util.EmptyChecker;
 import com.ruochu.edata.util.ExcelParseUtil;
 import com.ruochu.edata.util.XmlUtil;
 import com.ruochu.edata.xml.ExcelConf;
-import org.apache.poi.poifs.filesystem.FileMagic;
 
 import java.io.*;
 
@@ -58,14 +57,13 @@ public abstract class AbstractReadService implements ReadService {
 
     @Override
     public ReadResult read(InputStream is) throws IOException, UnknownFileTypeException {
-        if(!(FileMagic.valueOf(is) == FileMagic.OLE2 || FileMagic.valueOf(is) == FileMagic.OOXML)) {
-            throw new UnknownFileTypeException("未知的文件类型");
-        }
         try {
             this.userWorkbook = ExcelParseUtil.parse(is);
             return read();
+        } catch (UnknownFileTypeException | IOException e){
+            throw e;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new ERuntimeException(e);
         } finally {
             Context.remove();
         }

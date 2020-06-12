@@ -30,6 +30,15 @@ public class BodyConf implements Serializable{
     @XStreamImplicit(itemFieldName = "rectangle")
     private List<Rectangle> rectangles;
 
+    @XStreamImplicit(itemFieldName = "dynamicRow")
+    private List<DynamicRow> dynamicRows;
+
+    /**
+     * 行高
+     */
+    @XStreamAsAttribute
+    private Integer rowHeight;
+
     private Map<String, CellConf> cellMap;
 
     public CellConf getCell(String field) {
@@ -62,5 +71,13 @@ public class BodyConf implements Serializable{
 
     public void setCells(List<CellConf> cells) {
         this.cells = cells;
+    }
+
+    public List<DynamicRow> getDynamicRows() {
+        return dynamicRows;
+    }
+
+    public Integer getRowHeight() {
+        return rowHeight;
     }
 }

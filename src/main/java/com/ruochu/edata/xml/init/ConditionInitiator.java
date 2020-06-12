@@ -1,9 +1,9 @@
 package com.ruochu.edata.xml.init;
 
+import com.ruochu.edata.xml.Condition;
 import com.ruochu.edata.constant.Constants;
 import com.ruochu.edata.exception.XmlConfigException;
 import com.ruochu.edata.util.EmptyChecker;
-import com.ruochu.edata.xml.Condition;
 import com.ruochu.edata.xml.Rule;
 import org.apache.commons.lang3.StringUtils;
 

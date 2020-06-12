@@ -1,14 +1,18 @@
 package com.ruochu.edata.util;
 
+import com.ruochu.edata.exception.ERuntimeException;
 import com.ruochu.edata.reflect.FieldDefaultValueProvider;
 import com.ruochu.edata.xml.ExcelConf;
 import com.ruochu.edata.xml.init.ExcelInitiator;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+
+import static com.ruochu.edata.util.EmptyChecker.isEmpty;
 
 /**
  * xml配置工具类
@@ -64,7 +68,11 @@ public class XmlUtil {
             xStream.allowTypes(new Class[]{ExcelConf.class});
             xStream.processAnnotations(ExcelConf.class);
 
-            ExcelConf excel = (ExcelConf)xStream.fromXML(XmlUtil.class.getClassLoader().getResource(xmlPath));
+            URL resource = XmlUtil.class.getClassLoader().getResource(xmlPath);
+            if (isEmpty(resource)) {
+                throw new ERuntimeException("未找到xml文件: %s", xmlPath);
+            }
+            ExcelConf excel = (ExcelConf)xStream.fromXML(resource);
             new ExcelInitiator(excel, isRead).init();
             if (isRead) {
                 READ_XML_CACHE.put(xmlPath, excel);

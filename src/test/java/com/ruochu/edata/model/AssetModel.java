@@ -1,5 +1,7 @@
 package com.ruochu.edata.model;
 
+import com.ruochu.edata.EdataBaseDisplay;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,15 +16,35 @@ import java.util.List;
 public class AssetModel {
     private String assetName;
     private String assetCode;
-    private ValueTypeEnum valueType;
+    private ValueTypeDisplay valueType;
     private BigDecimal assetValue;
     private Integer amount;
     private Date obtainDate;
-    private List<UseIntentionEnum> useIntention;
+    private List<UseIntentionDisplay> useIntention;
 
     private LocalDate localDate;
     private LocalDateTime localDateTime;
     private ZonedDateTime zonedDateTime;
+
+    private int enumTest;
+
+    private AAA aaa = new AAA();
+
+    public AAA getAaa() {
+        return aaa;
+    }
+
+    public void setAaa(AAA aaa) {
+        this.aaa = aaa;
+    }
+
+    public int getEnumTest() {
+        return enumTest;
+    }
+
+    public void setEnumTest(int enumTest) {
+        this.enumTest = enumTest;
+    }
 
     public LocalDate getLocalDate() {
         return localDate;
@@ -64,11 +86,11 @@ public class AssetModel {
         this.assetCode = assetCode;
     }
 
-    public ValueTypeEnum getValueType() {
+    public ValueTypeDisplay getValueType() {
         return valueType;
     }
 
-    public void setValueType(ValueTypeEnum valueType) {
+    public void setValueType(ValueTypeDisplay valueType) {
         this.valueType = valueType;
     }
 
@@ -96,11 +118,22 @@ public class AssetModel {
         this.obtainDate = obtainDate;
     }
 
-    public List<UseIntentionEnum> getUseIntention() {
+    public List<UseIntentionDisplay> getUseIntention() {
         return useIntention;
     }
 
-    public void setUseIntention(List<UseIntentionEnum> useIntention) {
+    public void setUseIntention(List<UseIntentionDisplay> useIntention) {
         this.useIntention = useIntention;
+    }
+
+
+    public static class AAA implements EdataBaseDisplay {
+        private String name = "aaaName";
+        private String code = "aaaCode";
+
+        @Override
+        public String display() {
+            return name;
+        }
     }
 }

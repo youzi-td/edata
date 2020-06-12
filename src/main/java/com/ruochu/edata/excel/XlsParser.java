@@ -10,8 +10,7 @@ import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author RanPengCheng
@@ -156,11 +155,7 @@ public class XlsParser implements ExcelParser, HSSFListener {
                 NumberRecord numrec = (NumberRecord) record;
                 curRow = numrec.getRow();
                 curCol = numrec.getColumn();
-//                if (formatListener.getFormatIndex(numrec) >= HSSFDataFormat.getNumberOfBuiltinBuiltinFormats()) {
-//                    value = getNumDateFormat(numrec.getValue());
-//                }else {
                 value = formatListener.formatNumberDateCell(numrec).trim();
-//                }
                 break;
             case EOFRecord.sid:
                 if (EmptyChecker.notEmpty(eSheet)) {

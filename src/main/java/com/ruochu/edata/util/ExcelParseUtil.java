@@ -47,6 +47,9 @@ public class ExcelParseUtil {
     }
 
     public static EWorkbook parse(InputStream inp) throws IOException, OpenXML4JException, SAXException, UnknownFileTypeException {
+        if (!inp.markSupported()) {
+            inp = new BufferedInputStream(inp);
+        }
         if(FileMagic.valueOf(inp) == FileMagic.OLE2) {
             return new XlsParser().read(inp);
         }

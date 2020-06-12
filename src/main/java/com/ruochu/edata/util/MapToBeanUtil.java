@@ -1,6 +1,6 @@
 package com.ruochu.edata.util;
 
-import com.ruochu.edata.EDataBaseEnum;
+import com.ruochu.edata.EdataBaseDisplay;
 import com.ruochu.edata.constant.Constants;
 import com.ruochu.edata.xml.CellConf;
 
@@ -65,7 +65,7 @@ public class MapToBeanUtil {
                 value = new BigDecimal(s);
             } else if (Collection.class.isAssignableFrom(parameterType)) {
                 value = toCollection(s, cell, parameterType, field);
-            } else if (Enum.class.isAssignableFrom(parameterType) && EDataBaseEnum.class.isAssignableFrom(parameterType)) {
+            } else if (Enum.class.isAssignableFrom(parameterType) && EdataBaseDisplay.class.isAssignableFrom(parameterType)) {
                 value = toEnum(s, parameterType);
             } else if ("java.time".equals(parameterType.getPackage().getName())) {
                 value = toTime(s, cell, parameterType);
@@ -119,12 +119,11 @@ public class MapToBeanUtil {
         return null;
     }
 
-    private static Object toEnum(String s, Class<?> parameterType) throws ReflectiveOperationException {
-        Method values = parameterType.getMethod("values");
-        EDataBaseEnum[] enums = (EDataBaseEnum[])values.invoke(null);
-        for (EDataBaseEnum eDataBaseEnum : enums) {
-            if (eDataBaseEnum.getDescription().equals(s)) {
-                return eDataBaseEnum;
+    private static Object toEnum(String s, Class<?> parameterType) {
+        EdataBaseDisplay[] enums = (EdataBaseDisplay[])parameterType.getEnumConstants();
+        for (EdataBaseDisplay edataBaseDisplay : enums) {
+            if (edataBaseDisplay.display().equals(s)) {
+                return edataBaseDisplay;
             }
         }
         return null;

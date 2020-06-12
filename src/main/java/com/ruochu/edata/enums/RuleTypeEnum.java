@@ -1,5 +1,8 @@
 package com.ruochu.edata.enums;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 校验规则类型
  *
@@ -39,24 +42,26 @@ public enum RuleTypeEnum {
         this.defaultErrorMsg = defaultErrorMsg;
     }
 
+    private static final Map<String, RuleTypeEnum> MAP;
+
+    static {
+        MAP = new HashMap<>();
+        for (RuleTypeEnum typeEnum : values()) {
+            MAP.put(typeEnum.getType(), typeEnum);
+        }
+    }
+
     public String getType() {
         return type;
     }
 
     public static boolean exist(String type){
-        for (RuleTypeEnum rule : values()){
-            if (rule.type.equals(type)){
-                return true;
-            }
-        }
-        return false;
+        return MAP.containsKey(type);
     }
 
     public static String defaultErrorMsg(String type) {
-        for (RuleTypeEnum rule : values()) {
-            if (rule.type.equals(type)) {
-                return rule.defaultErrorMsg;
-            }
+        if (exist(type)) {
+            return MAP.get(type).defaultErrorMsg;
         }
         return null;
     }

@@ -1,12 +1,12 @@
 package com.ruochu.edata.read.validator;
 
-import com.ruochu.edata.enums.ErrorDataTypeEnum;
 import com.ruochu.edata.excel.model.ESheet;
 import com.ruochu.edata.excel.model.EWorkbook;
-import com.ruochu.edata.read.result.ErrorData;
-import com.ruochu.edata.util.EmptyChecker;
 import com.ruochu.edata.xml.ExcelConf;
 import com.ruochu.edata.xml.SheetConf;
+import com.ruochu.edata.enums.ErrorDataTypeEnum;
+import com.ruochu.edata.read.result.ErrorData;
+import com.ruochu.edata.util.EmptyChecker;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -119,7 +119,7 @@ public class TemplateValidator {
 
 
     private void addError(String sheetName, String errorMsg) {
-        errorDataList.add(new ErrorData(sheetName, errorMsg, ErrorDataTypeEnum.TEMAPLATE));
+        errorDataList.add(new ErrorData(sheetName, errorMsg, ErrorDataTypeEnum.TEMPLATE));
     }
 
     private void addError(int rowIndex,
@@ -128,6 +128,6 @@ public class TemplateValidator {
                           String cellValue,
                           String errorMsg,
                           String sheetName) {
-        errorDataList.add(new ErrorData(rowIndex, colIndex, title, cellValue, errorMsg, sheetName, ErrorDataTypeEnum.TEMAPLATE));
+        errorDataList.add(new ErrorData(rowIndex, colIndex, title, cellValue, errorMsg, sheetName, ErrorDataTypeEnum.TEMPLATE));
     }
 }

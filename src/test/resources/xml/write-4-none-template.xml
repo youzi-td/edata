@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<excel xmlns="com/ruochu/edata/read-write.xsd">
+<excel xmlns="cn/yzw/edata/read-write.xsd">
     <sheet sheetName="资产信息表-横表" sheetCode="assetInfo">
         <horizontalBody  firstValuePosition="a1">
             <cell title="序号" field="sequence" autoSequence="true"/>
@@ -17,8 +17,12 @@
             <cell title="localDateTime" field="localDateTime" format="yyyy=MM=dd HH;mm:ss"/>
             <cell title="zonedDateTime" field="zonedDateTime" format=""/>
             <cell title="collection" field="collection"/>
+            <cell title="enumTest" field="enumTest" valType="enum" format="1:lalala,2:hahaha"/>
+            <cell title="aaa" field="aaa"/>
 
         </horizontalBody>
         <!--<templateFilter values="填报日期：" positions="D4"/>-->
     </sheet>
+
+    <globalFilter values="(请填写）"/>
 </excel>

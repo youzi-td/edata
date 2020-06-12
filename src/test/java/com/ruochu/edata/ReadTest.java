@@ -1,6 +1,5 @@
 package com.ruochu.edata;
 
-import com.ruochu.edata.EdataFactory;
 import com.ruochu.edata.excel.model.EWorkbook;
 import com.ruochu.edata.exception.UnknownFileTypeException;
 import com.ruochu.edata.read.ReadService;
@@ -19,6 +18,7 @@ import org.xml.sax.SAXException;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * {描述}
@@ -122,4 +122,16 @@ public class ReadTest {
         }
     }
 
+    @Test
+    public void test() {
+        Pattern compile = Pattern.compile("^([-+])?(0|[1-9]\\d*)(\\.\\d+)?$");
+        System.out.println(compile.matcher("100.00").matches());
+        System.out.println(compile.matcher("+2.1").matches());
+        System.out.println(compile.matcher("11.214").matches());
+        System.out.println(compile.matcher("0.00").matches());
+        System.out.println(compile.matcher("0.01").matches());
+        System.out.println(compile.matcher("0.10").matches());
+        System.out.println(compile.matcher("010.10").matches());
+
+    }
 }

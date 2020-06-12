@@ -16,6 +16,8 @@ public class ReflectUtil {
     private static final Map<String, Map<String, Method>> GETTER_CACHE = new HashMap<>();
     private static final Map<String, Map<String, Method>> SETTER_CACHE = new HashMap<>();
 
+    private static final String GET = "get";
+    private static final String SET = "set";
 
 
     private ReflectUtil() {
@@ -63,6 +65,7 @@ public class ReflectUtil {
 
         return fieldMap;
     }
+
     /**
      * 判断是不是集合的实现类
      *
@@ -78,43 +81,60 @@ public class ReflectUtil {
         String className = clazz.getName();
         Map<String, Method> methodMap = GETTER_CACHE.get(className);
         if (methodMap == null) {
-            methodMap = new HashMap<>();
+            methodMap = getMethodMap(clazz, GET);
             GETTER_CACHE.put(className, methodMap);
         }
-        Method getter = methodMap.get(fieldName);
-        if (getter == null) {
-            Method[] methods = clazz.getMethods();
-            for (Method method : methods) {
-                if (method.getName().equalsIgnoreCase("get".concat(fieldName)) && method.getParameterCount() == 0) {
-                    getter = method;
-                }
-            }
-        }
 
-        return getter;
+        return methodMap.get(fieldName);
     }
-
 
     public static Method getSetter(Class<?> clazz, String fieldName) {
         String className = clazz.getName();
         Map<String, Method> methodMap = SETTER_CACHE.get(className);
         if (methodMap == null) {
-            methodMap = new HashMap<>();
+            methodMap = getMethodMap(clazz, SET);
             SETTER_CACHE.put(className, methodMap);
         }
 
-        Method setter = methodMap.get(fieldName);
-        if (setter == null) {
-            for (Method method : clazz.getMethods()) {
-                if (method.getName().equalsIgnoreCase("set".concat(fieldName)) && method.getParameterCount() == 1) {
-                    setter = method;
+        return methodMap.get(fieldName);
+    }
+
+    private static Map<String, Method> getMethodMap(Class<?> clazz, String type) {
+        Map<String, Field> fieldMap = getClassFields(clazz);
+        Map<String, Method> methodMap = new HashMap<>(fieldMap.size());
+
+        for (Method method : clazz.getMethods()) {
+            String methodName = method.getName();
+            if (methodName.startsWith(type) && methodName.length() > 3) {
+                if (GET.equals(type) && method.getParameterCount() != 0) {
+                    continue;
+                }
+                if (SET.equals(type) && method.getParameterCount() != 1) {
+                    continue;
+                }
+                String fieldName = methodName.substring(3);
+                fieldName = fieldMap.containsKey(fieldName) ? fieldName : fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
+                if (fieldMap.containsKey(fieldName) ) {
+                    methodMap.put(fieldName, method);
                 }
             }
         }
-        return setter;
+        return methodMap;
     }
 
     public static Field getField(Class<?> clazz, String fieldName) {
         return getClassFields(clazz).get(fieldName);
+    }
+
+    public static Object getValue(Object obj, String field) {
+        Method getter = getGetter(obj.getClass(), field);
+        if (getter != null) {
+            try {
+                return getter.invoke(obj);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return null;
     }
 }
